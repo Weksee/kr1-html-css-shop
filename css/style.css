@@ -1,116 +1,101 @@
-
-
-* {
-    box-sizing: border-box;
-}
-
-
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    line-height: 1.5;
-    color: #222222;
-    background-color: #ffffff;
-}
-
-
-header,
-main,
-footer {
-    padding: 20px;
-}
-
-header {
-    background-color: #f2f2f2;
-}
-
-footer {
-    background-color: #f2f2f2;
-}
-
-/* Шапка */
-.site-header {
-    max-width: 1100px;
-    margin: 0 auto;
-}
-
-.site-logo {
-    font-weight: bold;
-    text-decoration: none;
-    color: #222222;
-}
-
-/* Навигация */
-.site-nav__list {
-    padding: 0;
-    margin: 16px 0 0;
-    list-style: none;
-}
-
-.site-nav__list li {
-    margin-bottom: 8px;
-}
-
-.site-nav__list a {
-    color: #0057b8;
-    text-decoration: none;
-}
-
-.site-nav__list a:hover {
-    text-decoration: underline;
-}
-
-/* Hero-блок */
-.hero {
-    max-width: 1100px;
-    margin: 0 auto 32px;
-    padding: 32px 20px;
-    background-color: #eef5ff;
+/*
+Модальное окно.
+Элемент dialog сам умеет открываться поверх страницы.
+*/
+.order-dialog {
+    width: min(100% - 32px, 560px);
+    padding: 24px;
+    border: none;
     border-radius: 12px;
 }
 
-/* Общий класс для разделов страницы */
-.section {
-    max-width: 1100px;
-    margin: 0 auto 32px;
+/*
+Затемнение фона за модальным окном.
+*/
+.order-dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
-.section h2 {
-    margin-top: 0;
-}
-
-/* Карточка товара */
-.product-card {
+/*
+Поле формы.
+Каждый блок получает нижний отступ.
+*/
+.form-field {
     margin-bottom: 16px;
-    padding: 16px;
-    border: 1px solid #dddddd;
-    border-radius: 8px;
-    background-color: #ffffff;
 }
 
-.product-card h3 {
-    margin-top: 0;
+/*
+Подпись поля.
+*/
+.form-field label {
+    display: block;
+    margin-bottom: 6px;
 }
 
-/* Кнопка (пока это оформленная ссылка) */
-.button {
-    display: inline-block;
-    padding: 10px 16px;
-    color: #ffffff;
-    background-color: #0057b8;
-    text-decoration: none;
+/*
+Основные поля формы.
+*/
+.form-field input,
+.form-field select,
+.form-field textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #cccccc;
     border-radius: 6px;
+    font: inherit;
 }
 
-.button:hover {
-    background-color: #003f86;
+/*
+Checkbox не должен занимать всю ширину.
+*/
+.form-field input[type="checkbox"] {
+    width: auto;
 }
 
-/* Дополнительный информационный блок */
-.aside-info {
+/*
+Подсказка под полем телефона.
+*/
+.form-field small {
+    display: block;
+    margin-top: 4px;
+    color: #666666;
+}
+
+/*
+Видимый фокус для клавиатурной навигации.
+*/
+.form-field input:focus-visible,
+.form-field select:focus-visible,
+.form-field textarea:focus-visible,
+.form-actions button:focus-visible {
+    outline: 2px solid #0057b8;
+    outline-offset: 2px;
+}
+
+/*
+Подсветка ошибочных полей.
+Атрибут aria-invalid добавляется через JavaScript.
+*/
+[aria-invalid="true"] {
+    border-color: #b00020;
+}
+
+/*
+Кнопки формы.
+*/
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+/*
+Сообщение об успешной отправке.
+*/
+.success-message {
     max-width: 1100px;
-    margin: 0 auto 32px;
+    margin: 24px auto;
     padding: 16px;
-    border-left: 4px solid #0057b8;
-    background-color: #f7f7f7;
+    border-left: 4px solid #168a2f;
+    background-color: #eefaf0;
 }
