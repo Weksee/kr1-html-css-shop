@@ -496,9 +496,50 @@ px;
 
 .order-dialog {
   width: min(100% - 32px, 560px);
-  padding: var(--space-lg);
+  max-height: 90vh;
+  padding: 0;
   border: none;
   border-radius: var(--radius-lg);
+}
+
+/* display: flex только у открытого окна */
+.order-dialog[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.order-dialog__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.order-dialog__close {
+  padding: 0 var(--space-sm);
+  font-size: 28px;
+  line-height: 1;
+  color: var(--color-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.order-dialog__close:hover {
+  color: var(--color-text);
+}
+
+.order-dialog__close:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+/* Форма внутри окна прокручивается, шапка и кнопки остаются на месте */
+.order-form--in-dialog {
+  overflow-y: auto;
+  padding: var(--space-lg);
 }
 
 .order-dialog::backdrop {
@@ -506,7 +547,7 @@ px;
 }
 
 .order-dialog__title {
-  margin-top: 0;
+  margin: 0;
 }
 
 .order-form__field {
@@ -557,17 +598,30 @@ px;
   margin-top: var(--space-lg);
 }
 
+.order-form__actions--sticky {
+  position: sticky;
+  bottom: 0;
+  padding-top: var(--space-md);
+  background-color: var(--color-bg);
+}
+
 /* Поля с ошибкой (aria-invalid ставит JavaScript) */
 [aria-invalid="true"] {
   border-color: var(--color-danger);
 }
 
+/* Уведомление всегда видно внизу экрана */
 .success-message {
-  max-width: var(--container-width);
-  margin: var(--space-lg) auto;
+  position: fixed;
+  bottom: var(--space-lg);
+  left: 50%;
+  z-index: 30;
+  width: min(90%, 420px);
+  transform: translateX(-50%);
   padding: var(--space-md);
   border-left: 4px solid var(--color-success);
   background-color: var(--color-success-bg);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
 /* ===============================
