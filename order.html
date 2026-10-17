@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Форма заявки на товар учебного интернет-магазина.">
+  <title>Заявка — Учебный интернет-магазин</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="site-header__logo" href="index.html">ShopProject</a>
+
+      <nav class="site-nav" aria-label="Основная навигация">
+        <ul class="site-nav__list">
+          <li class="site-nav__item"><a class="site-nav__link" href="index.html">Главная</a></li>
+          <li class="site-nav__item"><a class="site-nav__link" href="catalog.html">Каталог</a></li>
+          <li class="site-nav__item"><a class="site-nav__link" href="product.html">Товар</a></li>
+          <li class="site-nav__item"><a class="site-nav__link site-nav__link--active" href="order.html">Заявка</a></li>
+          <li class="site-nav__item"><a class="site-nav__link" href="contacts.html">Контакты</a></li>
+          <li class="site-nav__item"><a class="site-nav__link" href="index.html#advantages">Преимущества</a></li>
+          <li class="site-nav__item"><a class="site-nav__link" href="index.html#popular">Популярные товары</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+    <nav class="breadcrumbs" aria-label="Хлебные крошки">
+      <a class="breadcrumbs__link" href="index.html">Главная</a>
+      <span class="breadcrumbs__current">Заявка</span>
+    </nav>
+
+    <section class="section">
+      <h1 class="section__title">Оформление заявки</h1>
+      <p>Заполните форму, и мы свяжемся с вами. Все поля, кроме комментария, обязательны.</p>
+
+      <form class="order-form" id="order-form" action="#" method="post" novalidate>
+        <div class="order-form__field">
+          <label class="order-form__label" for="order-name">Имя</label>
+          <input class="order-form__input" id="order-name" name="name" type="text"
+                 placeholder="Введите ваше имя" minlength="2" autocomplete="given-name" required>
+        </div>
+
+        <div class="order-form__field">
+          <label class="order-form__label" for="order-email">E-mail</label>
+          <input class="order-form__input" id="order-email" name="email" type="email"
+                 placeholder="example@mail.ru" autocomplete="email" required>
+        </div>
+
+        <div class="order-form__field">
+          <label class="order-form__label" for="order-phone">Телефон</label>
+          <input class="order-form__input" id="order-phone" name="phone" type="tel" inputmode="tel"
+                 placeholder="+7 (900) 000-00-00"
+                 pattern="^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$" required>
+          <small class="order-form__hint">Формат: +7 (900) 000-00-00</small>
+        </div>
+
+        <div class="order-form__field">
+          <label class="order-form__label" for="order-product">Товар</label>
+          <select class="order-form__select" id="order-product" name="product" required>
+            <option value="">Выберите товар</option>
+            <option value="product-1">Товар 1</option>
+            <option value="product-2">Товар 2</option>
+            <option value="product-3">Товар 3</option>
+          </select>
+        </div>
+
+        <div class="order-form__field">
+          <label class="order-form__label" for="order-comment">Комментарий</label>
+          <textarea class="order-form__textarea" id="order-comment" name="comment" rows="4"
+                    placeholder="Укажите дополнительную информацию"></textarea>
+        </div>
+
+        <div class="order-form__field">
+          <label class="order-form__label">
+            <input class="order-form__checkbox" id="order-agreement" name="agreement" type="checkbox" required>
+            Я согласен на обработку данных
+          </label>
+        </div>
+
+        <div class="order-
+
+
+form__actions">
+          <button class="button button--primary" type="submit">Отправить заявку</button>
+        </div>
+      </form>
+
+      <p class="success-message" id="success-message" hidden>
+        Форма успешно отправлена!
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <p class="site-footer__text">&copy; 2026 Учебный проект. Все права защищены.</p>
+      <p class="site-footer__text">Дисциплина: Фронтенд и бэкенд разработка</p>
+    </div>
+  </footer>
+
+  <a class="to-top" href="#top">Наверх</a>
+</body>
+</html>
+
+
+
