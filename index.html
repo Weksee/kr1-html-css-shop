@@ -127,9 +127,12 @@
   </footer>
 
   <dialog class="order-dialog" id="order-dialog" aria-labelledby="order-dialog-title">
-    <h2 class="order-dialog__title" id="order-dialog-title">Оформление заявки</h2>
+    <div class="order-dialog__header">
+      <h2 class="order-dialog__title" id="order-dialog-title">Оформление заявки</h2>
+      <button class="order-dialog__close" type="button" data-close-dialog aria-label="Закрыть окно">&times;</button>
+    </div>
 
-    <form class="order-form" id="order-form" action="#" method="post" novalidate>
+    <form class="order-form order-form--in-dialog" id="order-form" action="#" method="post" novalidate>
       <input id="selected-product" name="selected-product" type="hidden">
 
       <div class="order-form__field">
@@ -180,4 +183,17 @@
         </label>
       </div>
 
-      <div class="order-form__actions">
+      <div class="order-form__actions order-form__actions--sticky">
+        <button class="button button--secondary" type="button" data-close-dialog>Закрыть</button>
+        <button class="button button--primary" type="submit">Отправить заявку</button>
+      </div>
+    </form>
+  </dialog>
+
+  <p class="success-message" id="success-message" hidden>
+    Форма успешно отправлена!
+  </p>
+
+  <a class="to-top" href="#top">Наверх</a>
+</body>
+</html>
