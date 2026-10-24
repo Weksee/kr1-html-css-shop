@@ -580,7 +580,7 @@ function initProduct() {
 
 
 
-ducts.js
+
   function renderReviews() {
     const all = [...loadReviews(product.id), ...product.reviews];
     const average = all.reduce((sum, review) => sum + review.rating, 0) / all.length;

@@ -6,9 +6,8 @@
   <meta name="description" content="Каталог товаров учебного интернет-магазина.">
   <title>Каталог товаров — Учебный интернет-магазин</title>
   <link rel="stylesheet" href="css/style.css">
-  <script src="js/products.js"></script>
-  <script src="js/main.js"></script>
-
+  <script src="js/products.js" defer></script>
+  <script src="js/main.js" defer></script>
 </head>
 <body>
   <header class="site-header">
@@ -30,7 +29,7 @@
     </div>
   </header>
 
-<main class="page">
+  <main class="page">
     <nav class="breadcrumbs" aria-label="Хлебные крошки">
       <a class="breadcrumbs__link" href="index.html">Главная</a>
       <span class="breadcrumbs__current">Каталог</span>
@@ -57,6 +56,11 @@
             <label class="filters-form__label">
               <input type="checkbox" name="category" value="uk">
               Британские
+            </label>
+
+            <label class="filters-form__label">
+              <input type="checkbox" name="category" value="germany">
+              Немецкие
             </label>
           </fieldset>
 
@@ -85,7 +89,10 @@
         </form>
       </aside>
 
-      <section class="catalog-products">
+      <section class="catalog-produ
+
+
+cts">
         <h2 class="catalog-products__title">Список автомобилей</h2>
         <p class="catalog-products__count" id="catalog-count"></p>
 
@@ -118,6 +125,4 @@
   <a class="to-top" href="#top" aria-label="Наверх" title="Наверх"></a>
 </body>
 </html>
-
-
 
