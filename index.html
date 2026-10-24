@@ -6,22 +6,24 @@
   <meta name="description" content="Главная страница учебного интернет-магазина.">
   <title>Учебный интернет-магазин</title>
   <link rel="stylesheet" href="css/style.css">
+  <script src="js/products.js"></script>
   <script src="js/main.js" defer></script>
 </head>
 <body>
-  <header class="site-header">
+<header class="site-header">
     <div class="site-header__inner">
-      <a class="site-header__logo" href="index.html">ShopProject</a>
+      <a class="site-header__logo" href="index.html">SuperCars</a>
 
       <nav class="site-nav" aria-label="Основная навигация">
         <ul class="site-nav__list">
           <li class="site-nav__item"><a class="site-nav__link site-nav__link--active" href="index.html">Главная</a></li>
           <li class="site-nav__item"><a class="site-nav__link" href="catalog.html">Каталог</a></li>
-          <li class="site-nav__item"><a class="site-nav__link" href="product.html">Товар</a></li>
+          <li class="site-nav__item"><a class="site-nav__link" href="category.html">Категории</a></li>
+          <li class="site-nav__item"><a class="site-nav__link" href="about.html">О нас</a></li>
+          <li class="site-nav__item"><a class="site-nav__link" href="delivery.html">Доставка</a></li>
+          <li class="site-nav__item"><a class="site-nav__link" href="faq.html">Вопросы</a></li>
           <li class="site-nav__item"><a class="site-nav__link" href="order.html">Заявка</a></li>
           <li class="site-nav__item"><a class="site-nav__link" href="contacts.html">Контакты</a></li>
-          <li class="site-nav__item"><a class="site-nav__link" href="index.html#advantages">Преимущества</a></li>
-          <li class="site-nav__item"><a class="site-nav__link" href="index.html#popular">Популярные товары</a></li>
         </ul>
       </nav>
     </div>
@@ -29,85 +31,73 @@
 
   <main class="page">
     <section class="hero">
-      <h1 class="hero__title">Учебный интернет-магазин</h1>
+      <h1 class="hero__title">Суперкары для тех, кто любит скорость</h1>
       <p class="hero__text">
-        Это учебный многостраничный сайт интернет-магазина. Здесь можно
-        посмотреть каталог, открыть карточку товара и оставить заявку.
+        Каталог избранных суперкаров Ferrari, Lamborghini и McLaren. Выберите
+        модель, изучите характеристики, прочитайте отзывы и оставьте заявку.
       </p>
-      <a class="button button--primary" href="#popular">Перейти к товарам</a>
+      <a class="button button--primary" href="#popular">Перейти к автомобилям</a>
     </section>
 
     <section class="section" id="about">
       <h2 class="section__title">О проекте</h2>
       <p>
-        В рамках проекта разработан многостраничный сайт интернет-магазина
-        на HTML и CSS: семантическая разметка, Flexbox, Grid, БЭМ.
+        В рамках проекта разработан многостраничный сайт магазина суперкаров
+        на HTML, CSS и JavaScript: семантическая разметка, Flexbox, Grid, БЭМ.
       </p>
     </section>
 
     <section class="section" id="advantages">
-      <h2 class="section__title">Преимущества проекта</h2>
+      <h2 class="section__title">Преимущества магазина</h2>
       <ul class="advantages-list">
-        <li class="advantages-list__item">понятная HTML-структура;</li>
-        <li class="advantages-list__item">семантические блоки страницы;</li>
-        <li class="advantages-list__item">единое БЭМ-именование классов;</li>
-        <li class="advantages-list__item">многостраничная структура с общей навигацией.</li>
+        <li class="advantages-list__item">подробные характеристики каждого автомобиля;</li>
+        <li class="advantages-list__item">отзывы покупателей и средняя оценка;</li>
+        <li class="advantages-list__item">удобные фильтры и категории;</li>
+        <li class="advantages-list__item">быстрая заявка прямо с главной страницы.</li>
       </ul>
     </section>
 
+    <section class="section" id="categories">
+      <h2 class="section__title">Категории</h2>
+      <div class="categories-grid" data-categories></div>
+    </section>
+
     <section class="section" id="popular">
-      <h2 class="section__title">Популярные товары</h2>
+      <h2 class="section__title">Популярные автомобили</h2>
+      <div class="products-grid" data-products data-order></div>
+    </section>
 
-      <div class="products-grid">
-        <article class="product-card product-card--featured">
-          <span class="product-card__badge">Хит</span>
-          <h3 class="product-card__title">Товар 1</h3>
-          <p class="product-card__description">Краткое описание учебного товара.</p>
-          <p class="product-card__price">Цена: 1000 руб.</p>
-          <button class="button button--primary product-card__button" type="button" data-product="Товар 1">
-            Заказать
-          </button>
-        </article>
-
-        <article class="product-card product-card--discount">
-          <span class="product-card__badge product-card__badge--discount">Скидка</span>
-          <h3 class="product-card__title">Товар 2</h3>
-          <p class="product-card__description">Краткое описание учебного товара.</p>
-          <p class="product-card__price">Цена: 1500 руб.</p>
-          <button class="button button--primary product-card__button" type="button" data-product="Товар 2">
-            Заказать
-          </button>
-        </article>
-
-        <article class="product-card">
-          <span class="product-card__badge product-card__badge--new">Новинка</span>
-          <h3 class="product-card__title">Товар 3</h3>
-          <p class="product-card__description">Краткое описание учебного товара.</p>
-          <p class="product-card__price">Цена: 2000
-
-
-руб.</p>
-          <button class="button button--primary product-card__button" type="button" data-product="Товар 3">
-            Заказать
-          </button>
-        </article>
-      </div>
+    <section class="section" id="reviews">
+      <h2 class="section__title">Отзывы покупателей</h2>
+      <div class="reviews__list" id="home-reviews"></div>
     </section>
 
     <section class="section" id="faq">
       <h2 class="section__title">Частые вопросы</h2>
 
       <div class="faq">
-        <details class="faq__item">
+        <details class="faq__item" name="faq">
           <summary class="faq__question">Как оформить заявку?</summary>
-          <p class="faq__answer">Нажмите «Заказать» у товара или откройте страницу «Заявка» и заполните форму.</p>
+          <p class="faq__answer">Нажмите «Заказать» у автомобиля или откройте страницу «Заявка» и заполните форму.</p>
         </details>
 
-        <details class="faq__item">
+        <details class="faq__item" name="faq">
           <summary class="faq__question">Как быстро вам ответят?</summary>
           <p class="faq__answer">Это учебный проект, поэтому заявки никуда не отправляются.</p>
         </details>
+
+        <details class="faq__item" name="faq">
+          <summary class="faq__question">Какая гарантия на автомобили?</summary>
+          <p class="faq__answer">От 24 до 36 месяцев в зависимости от модели. Точный срок указан в характеристиках.</p>
+        </details>
+
+        <details class="faq__item" name="faq">
+          <summary class="faq__question">Можно ли оплатить автомобиль в лизинг?</summary>
+          <p class="faq__answer">Да, остаток суммы можно оплатить через лизинг. Подробности — на странице «Доставка».</p>
+        </details>
       </div>
+
+      <p><a href="faq.html">Все вопросы и ответы</a></p>
     </section>
 
     <aside class="aside-info">
@@ -130,6 +120,14 @@
     <div class="order-dialog__header">
       <h2 class="order-dialog__title" id="order-dialog-title">Оформление заявки</h2>
       <button class="order-dialog__close" type="button" data-close-dialog aria-label="Закрыть окно">&times;</button>
+    </div>
+
+    <div class="order-dialog__product" id="dialog-product" hidden>
+      <img class="order-dialog__thumb" id="dialog-product-img" src="" alt="" width="96" height="60">
+      <div>
+        <p class="order-dialog__product-name" id="dialog-product-name"></p>
+        <p class="order-dialog__product-price" id="dialog-product-price"></p>
+      </div>
     </div>
 
     <form class="order-form order-form--in-dialog" id="order-form" action="#" method="post" novalidate>
@@ -194,6 +192,6 @@
     Форма успешно отправлена!
   </p>
 
-  <a class="to-top" href="#top">Наверх</a>
+  <a class="to-top" href="#top" aria-label="Наверх" title="Наверх"></a>
 </body>
 </html>

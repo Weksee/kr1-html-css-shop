@@ -6,105 +6,103 @@
   <meta name="description" content="Каталог товаров учебного интернет-магазина.">
   <title>Каталог товаров — Учебный интернет-магазин</title>
   <link rel="stylesheet" href="css/style.css">
+  <script src="js/products.js"></script>
+  <script src="js/main.js"></script>
+
 </head>
 <body>
   <header class="site-header">
     <div class="site-header__inner">
-      <a class="site-header__logo" href="index.html">ShopProject</a>
+      <a class="site-header__logo" href="index.html">SuperCars</a>
 
       <nav class="site-nav" aria-label="Основная навигация">
         <ul class="site-nav__list">
           <li class="site-nav__item"><a class="site-nav__link" href="index.html">Главная</a></li>
           <li class="site-nav__item"><a class="site-nav__link site-nav__link--active" href="catalog.html">Каталог</a></li>
-          <li class="site-nav__item"><a class="site-nav__link" href="product.html">Товар</a></li>
+          <li class="site-nav__item"><a class="site-nav__link" href="category.html">Категории</a></li>
+          <li class="site-nav__item"><a class="site-nav__link" href="about.html">О нас</a></li>
+          <li class="site-nav__item"><a class="site-nav__link" href="delivery.html">Доставка</a></li>
+          <li class="site-nav__item"><a class="site-nav__link" href="faq.html">Вопросы</a></li>
           <li class="site-nav__item"><a class="site-nav__link" href="order.html">Заявка</a></li>
           <li class="site-nav__item"><a class="site-nav__link" href="contacts.html">Контакты</a></li>
-          <li class="site-nav__item"><a class="site-nav__link" href="index.html#advantages">Преимущества</a></li>
-          <li class="site-nav__item"><a class="site-nav__link" href="index.html#popular">Популярные товары</a></li>
         </ul>
       </nav>
     </div>
   </header>
 
-  <main class="page">
+<main class="page">
     <nav class="breadcrumbs" aria-label="Хлебные крошки">
       <a class="breadcrumbs__link" href="index.html">Главная</a>
       <span class="breadcrumbs__current">Каталог</span>
     </nav>
 
     <section class="section">
-      <h1 class="section__title">Каталог товаров</h1>
-      <p>На этой странице представлен учебный каталог товаров.</p>
+      <h1 class="section__title">Каталог суперкаров</h1>
+      <p>Выберите страну производителя, цену и сортировку. Блок фильтров закреплён и остаётся на экране при прокрутке страницы.</p>
     </section>
 
     <section class="catalog-layout">
       <aside class="catalog-filters">
         <h2 class="catalog-filters__title">Фильтры</h2>
 
-        <form class="filters-form" action="#" method="get">
+        <form class="filters-form" id="filters-form" action="#" method="get">
           <fieldset class="filters-form__group">
             <legend class="filters-form__legend">Категория</legend>
 
             <label class="filters-form__label">
-              <input type="checkbox" name="category" value="all">
-              Все товары
+              <input type="checkbox" name="category" value="italy">
+              Итальянские
             </label>
 
             <label class="filters-form__label">
-              <input type="checkbox" name="category" value="popular">
-              Популярные
-            </label>
-
-            <label class="filters-form__label">
-              <input type="checkbox" name="category" value="new">
-              Новинки
+              <input type="checkbox" name="category" value="uk">
+              Британские
             </label>
           </fieldset>
 
           <fieldset class="filters-form__group">
-            <legend class="filters-form__legend">Цена</legend>
+            <legend class="filters-form__legend">Цена, млн руб.</legend>
 
             <label class="filters-form__label" for="price-from">От</label>
-            <input class="filters-form__input" id="price-from" name="price-from" type="number" min="0" placeholder="0">
+            <input class="filters-form__input" id="price-from" name="price-from" type="number" min="0" placeholder="30">
 
             <label class="filters-form__label" for="price-to">До</label>
-            <input class="filters-form__input" id="price-to" name="price-to" type="number" min="0" placeholder="5000">
+            <input class="filters-form__input" id="price-to" name="price-to" type="number" min="0" placeholder="70">
           </fieldset>
 
-          <button class="button button--primary" type="submit">Применить</button>
+          <fieldset class="filters-form__group">
+            <legend class="filters-form__legend">Сортировка</legend>
+
+            <label class="filters-form__label" for="sort">Порядок</label>
+            <select class="filters-form__input" id="sort" name="sort">
+              <option value="default">По умолчанию</option>
+              <option value="price-asc">Сначала дешёвые</option>
+              <option value="price-desc">Сначала дорогие</option>
+            </select>
+          </fieldset>
+
+          <button class="button button--secondary" type="reset">Сбросить</button>
         </form>
       </aside>
 
       <section class="catalog-products">
-        <h2 class="catalog-products__title">Список товаров</h2>
+        <h2 class="catalog-products__title">Список автомобилей</h2>
+        <p class="catalog-products__count" id="catalog-count"></p>
 
-        <div class="products-grid">
-          <article class="product-card product-card--featured">
-            <span class="product-card__badge">Хит</span>
-            <h3 class="product-card__title">Товар 1</h3>
-            <p class="product-card__description">Краткое описание учебного товара.</p>
-            <p class="product-card__price">Цена: 1000 руб.</p>
-            <a class="button button--primary product-card__button" href="product.html">Подробнее</a>
-          </article>
+        <div class="products-grid" id="catalog-grid"></div>
+        <p class="catalog-products__empty" id="catalog-empty" hidden>
+          По вашему запросу ничего не найдено. Измените фильтры.
+        </p>
 
-          <article class="product-card product-card--discount">
-            <span class="product-card__badge product-card__badge--discount">Скидка</span>
-            <h3 class="product-card__title"
-
-
->Товар 2</h3>
-            <p class="product-card__description">Краткое описание учебного товара.</p>
-            <p class="product-card__price">Цена: 1500 руб.</p>
-            <a class="button button--primary product-card__button" href="product.html">Подробнее</a>
-          </article>
-
-          <article class="product-card">
-            <span class="product-card__badge product-card__badge--new">Новинка</span>
-            <h3 class="product-card__title">Товар 3</h3>
-            <p class="product-card__description">Краткое описание учебного товара.</p>
-            <p class="product-card__price">Цена: 2000 руб.</p>
-            <a class="button button--primary product-card__button" href="product.html">Подробнее</a>
-          </article>
+        <div class="catalog-tips">
+          <h2 class="catalog-tips__title">Как выбрать суперкар</h2>
+          <ol class="catalog-tips__list">
+            <li>Определите задачу: трек, дорога или коллекция.</li>
+            <li>Сравните мощность, массу и тип привода — они влияют на характер машины.</li>
+            <li>Уточните гарантию и условия обслуживания.</li>
+            <li>Прочитайте отзывы владельцев на странице автомобиля.</li>
+            <li>Оставьте заявку — менеджер подберёт комплектацию и условия оплаты.</li>
+          </ol>
         </div>
       </section>
     </section>
@@ -117,7 +115,7 @@
     </div>
   </footer>
 
-  <a class="to-top" href="#top">Наверх</a>
+  <a class="to-top" href="#top" aria-label="Наверх" title="Наверх"></a>
 </body>
 </html>
 

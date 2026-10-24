@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ОПИСАНИЕ">
+  <title>Частые вопросы — SuperCars</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/products.js" defer></script>
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="site-header__logo" href="index.html">SuperCars</a>
+
+      <nav class="site-nav" aria-label="Основная навигация">
+        <ul class="site-nav__list">
+          <li class="site-nav__item"><a class="site-nav__link" href="index.html">Главная</a></li>
+          <li class="site-nav__item"><a class="site-nav__link" href="catalog.html">Каталог</a></li>
+          <li class="site-nav__item"><a class="site-nav__link" href="category.html">Категории</a></li>
+          <li class="site-nav__item"><a class="site-nav__link" href="about.html">О нас</a></li>
+          <li class="site-nav__item"><a class="site-nav__link" href="delivery.html">Доставка</a></li>
+          <li class="site-nav__item"><a class="site-nav__link site-nav__link--active" href="faq.html">Вопросы</a></li>
+          <li class="site-nav__item"><a class="site-nav__link" href="order.html">Заявка</a></li>
+          <li class="site-nav__item"><a class="site-nav__link" href="contacts.html">Контакты</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+    <nav class="breadcrumbs" aria-label="Хлебные крошки">
+      <a class="breadcrumbs__link" href="index.html">Главная</a>
+      <span class="breadcrumbs__current">Вопросы и ответы</span>
+    </nav>
+
+    <section class="section">
+      <h1 class="section__title">Частые вопросы</h1>
+      <p>В каждой группе одновременно открыт только один ответ.</p>
+    </section>
+
+    <section class="section">
+      <h2 class="section__title">Заказ и оплата</h2>
+      <div class="faq">
+        <details class="faq__item" name="faq-order">
+          <summary class="faq__question">Как оформить заявку?</summary>
+          <p class="faq__answer">Нажмите «Заказать» у автомобиля на главной странице или откройте страницу «Заявка» и заполните форму.</p>
+        </details>
+        <details class="faq__item" name="faq-order">
+          <summary class="faq__question">Как быстро вам ответят?</summary>
+          <p class="faq__answer">Это учебный проект, поэтому заявки никуда не отправляются. В реальном магазине менеджер отвечал бы в течение рабочего дня.</p>
+        </details>
+        <details class="faq__item" name="faq-order">
+          <summary class="faq__question">Можно ли купить автомобиль в лизинг?</summary>
+          <p class="faq__answer">Да, в учебном сценарии остаток суммы можно оплатить через лизинг. Подробности указаны на странице «Доставка».</p>
+        </details>
+        <details class="faq__item" name="faq-order">
+          <summary class="faq__question">Что такое задаток?</summary>
+          <p class="faq__answer">Это часть стоимости (10%), которая закрепляет автомобиль за вами на время оформления договора.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section__title">Автомобили и гарантия</h2>
+      <div class="faq">
+        <details class="faq__item" name="faq-cars">
+          <summary class="faq__question">Какая гарантия на автомобили?</summary>
+          <p class="faq__answer">От 24 до 36 месяцев в зависимости от модели. Точный срок указан в таблице характеристик.</p>
+        </details>
+        <details class="faq__item" name="faq-cars">
+          <summary class="faq__question">Можно ли посмотреть автомобиль вживую?</summary>
+          <p class="faq__answer">Да, запишитесь на просмотр через страницу «Контакты» или оставьте заявку.</p>
+        </details>
+        <details class="faq__item" name="faq-cars">
+          <summary class="faq__question">Откуда берутся отзывы?</summary>
+          <p class="faq__answer">Стандартные отзывы заложены в проект, а новые вы можете добавить сами на странице автомобиля.</p>
+        </details>
+        <details class="faq__item" name="faq-cars">
+          <summary class="faq__question">Есть ли автомобили под заказ?</summary>
+          <p class="faq__answer">Да, у части моделей статус «Под заказ». Срок поставки уточняет менеджер.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="section">
+      <p>Не нашли ответ? <a href="contacts.html">Свяжитесь с нами</a>.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <p class="site-footer__text">&copy; 2026 Учебный проект. Все права защищены.</p>
+      <p class="site-footer__text">Дисциплина: Фронтенд и бэкенд разработка</p>
+    </div>
+  </footer>
+
+  <a class="to-top" href="#top" aria-label="Наверх" title="Наверх"></a>
+</body>
+</html>
+
+

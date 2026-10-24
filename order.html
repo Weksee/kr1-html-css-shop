@@ -6,22 +6,24 @@
   <meta name="description" content="Форма заявки на товар учебного интернет-магазина.">
   <title>Заявка — Учебный интернет-магазин</title>
   <link rel="stylesheet" href="css/style.css">
+  <script src="js/products.js"></script>
   <script src="js/main.js" defer></script>
 </head>
 <body>
   <header class="site-header">
     <div class="site-header__inner">
-      <a class="site-header__logo" href="index.html">ShopProject</a>
+      <a class="site-header__logo" href="index.html">SuperCars</a>
 
       <nav class="site-nav" aria-label="Основная навигация">
         <ul class="site-nav__list">
           <li class="site-nav__item"><a class="site-nav__link" href="index.html">Главная</a></li>
           <li class="site-nav__item"><a class="site-nav__link" href="catalog.html">Каталог</a></li>
-          <li class="site-nav__item"><a class="site-nav__link" href="product.html">Товар</a></li>
+          <li class="site-nav__item"><a class="site-nav__link" href="category.html">Категории</a></li>
+          <li class="site-nav__item"><a class="site-nav__link" href="about.html">О нас</a></li>
+          <li class="site-nav__item"><a class="site-nav__link" href="delivery.html">Доставка</a></li>
+          <li class="site-nav__item"><a class="site-nav__link" href="faq.html">Вопросы</a></li>
           <li class="site-nav__item"><a class="site-nav__link site-nav__link--active" href="order.html">Заявка</a></li>
           <li class="site-nav__item"><a class="site-nav__link" href="contacts.html">Контакты</a></li>
-          <li class="site-nav__item"><a class="site-nav__link" href="index.html#advantages">Преимущества</a></li>
-          <li class="site-nav__item"><a class="site-nav__link" href="index.html#popular">Популярные товары</a></li>
         </ul>
       </nav>
     </div>
@@ -59,12 +61,12 @@
         </div>
 
         <div class="order-form__field">
-          <label class="order-form__label" for="order-product">Товар</label>
+          <label class="order-form__label" for="order-product">Автомобиль</label>
           <select class="order-form__select" id="order-product" name="product" required>
-            <option value="">Выберите товар</option>
-            <option value="product-1">Товар 1</option>
-            <option value="product-2">Товар 2</option>
-            <option value="product-3">Товар 3</option>
+            <option value="">Выберите автомобиль</option>
+            <option value="sf90">Ferrari SF90 Stradale</option>
+            <option value="huracan">Lamborghini Huracán Tecnica</option>
+            <option value="750s">McLaren 750S</option>
           </select>
         </div>
 
@@ -102,7 +104,7 @@ form__actions">
     </div>
   </footer>
 
-  <a class="to-top" href="#top">Наверх</a>
+  <a class="to-top" href="#top" aria-label="Наверх" title="Наверх"></a>
 </body>
 </html>
 
