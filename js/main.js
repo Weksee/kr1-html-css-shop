@@ -87,7 +87,7 @@ function getAllReviews(productId) {
 }
 function addReview(review) {
   const list = loadMyReviews();
-  list.push({ ...review, id: Date.now(), date: new Date().toLocaleDateString('ru-RU') });
+  list.push({ ...review, user: currentUser() ? currentUser().email : null, id: Date.now(), date: new Date().toLocaleDateString('ru-RU') });
   saveMyReviews(list);
 }
 function deleteReview(id) { saveMyReviews(loadMyReviews().filter((r) => r.id !== id)); }
@@ -131,6 +131,7 @@ function cardHtml(p) {
   return `
   <div class="col-sm-6 col-lg-4 reveal">
     <article class="car-card">
+      <button class="fav-btn" type="button" data-fav="${p.id}" aria-pressed="${isFav(p.id)}" aria-label="Избранное: ${escapeHtml(p.name)}"><i class="bi ${isFav(p.id) ? 'bi-heart-fill' : 'bi-heart'}"></i></button>
       <a class="car-card__media" href="product.html?id=${p.id}" aria-label="Подробнее: ${escapeHtml(p.name)}">
         <span class="badge ${badgeClass} car-card__badge">${badgeText}</span>
         <img src="${p.image}" alt="${escapeHtml(p.name)} — вид спереди" width="678" height="452" loading="lazy">
@@ -239,7 +240,7 @@ function initOrderModal() {
   <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
       <div class="modal-header border-secondary"><h2 class="modal-title h5" id="orderTitle">Оформить заявку</h2>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Закрыть"></button></div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button></div>
       <form id="orderForm" novalidate><div class="modal-body">
         <p class="text-secondary" id="orderCar"></p>
         <div class="mb-3"><label for="oName" class="form-label">Ваше имя</label>
@@ -257,7 +258,7 @@ function initOrderModal() {
   let currentId = null;
   bindForm(orderForm, (data) => {
     const orders = JSON.parse(localStorage.getItem('weety:orders') || '[]');
-    orders.push({ car: currentId, name: data.get('name'), phone: data.get('phone'), pay: data.get('pay'), date: new Date().toISOString() });
+    orders.push({ car: currentId, name: data.get('name'), phone: data.get('phone'), pay: data.get('pay'), date: new Date().toISOString(), user: currentUser() ? currentUser().email : null });
     try { localStorage.setItem('weety:orders', JSON.stringify(orders)); } catch (e) {}
     orderModal.hide();
     toast(`Заявка отправлена, ${data.get('name')}! Менеджер свяжется с вами в течение 15 минут.`);
@@ -268,6 +269,8 @@ function initOrderModal() {
     const p = findProduct(btn.dataset.order);
     currentId = p.id;
     document.getElementById('orderCar').textContent = `${p.name} — ${formatPrice(p.price)}`;
+    const u = currentUser();
+    if (u) { orderForm.elements.name.value = u.name; orderForm.elements.phone.value = u.phone || ''; }
     orderModal.show();
   });
 }
@@ -275,6 +278,8 @@ function initOrderModal() {
 // ===== 8. Форма отзыва =====
 function initReviewForm(form, fixedId, afterAdd) {
   const select = form.querySelector('select[name="productId"]');
+  const u = currentUser();
+  if (u) form.elements.name.value = u.name;
   if (select) select.append(...PRODUCTS.map((p) => { const o = el('option', '', p.name); o.value = p.id; return o; }));
   bindForm(form, (data) => {
     addReview({ productId: fixedId || data.get('productId'), name: data.get('name').trim(), rating: Number(data.get('rating')), text: data.get('text').trim() });
@@ -339,6 +344,8 @@ const pages = {
     document.getElementById('pOld').textContent = disc ? `${formatPrice(p.oldPrice)} · скидка ${disc}%` : '';
     document.getElementById('pStatus').textContent = getStatus(p);
     document.getElementById('pOrder').dataset.order = p.id;
+    document.getElementById('pFav').dataset.fav = p.id;
+    syncFav();
     document.getElementById('pCat').textContent = CATEGORIES[p.category].title;
     const stats = document.getElementById('pStats');
     p.stats.forEach(([v, l]) => { const c = el('div', 'col-4'); const b = el('div', 'spec-stat'); b.append(el('strong', '', v), el('small', 'text-secondary', l)); c.append(b); stats.append(c); });
@@ -398,12 +405,271 @@ const pages = {
   about() {}
 };
 
-// ===== 10. Запуск =====
+// ===== 10. Избранное =====
+const FAV_KEY = 'weety:favs';
+function getFavs() { try { return JSON.parse(localStorage.getItem(FAV_KEY)) || []; } catch (e) { return []; } }
+function isFav(id) { return getFavs().includes(id); }
+function toggleFav(id) {
+  const list = getFavs();
+  const i = list.indexOf(id);
+  if (i >= 0) list.splice(i, 1); else list.push(id);
+  try { localStorage.setItem(FAV_KEY, JSON.stringify(list)); } catch (e) {}
+  syncFav();
+  document.dispatchEvent(new CustomEvent('favschange'));
+  const p = findProduct(id);
+  toast(i >= 0 ? `Удалено из избранного: ${p.name}` : `Добавлено в избранное: ${p.name}`);
+}
+function syncFav() {
+  const favs = getFavs();
+  document.querySelectorAll('[data-fav]').forEach((btn) => {
+    const on = favs.includes(btn.dataset.fav);
+    btn.setAttribute('aria-pressed', String(on));
+    const icon = btn.querySelector('i');
+    if (icon) icon.className = 'bi ' + (on ? 'bi-heart-fill' : 'bi-heart');
+    const label = btn.querySelector('.fav-label');
+    if (label) label.textContent = on ? 'В избранном' : 'В избранное';
+  });
+  const badge = document.getElementById('favCount');
+  if (badge) { badge.textContent = favs.length; badge.hidden = favs.length === 0; }
+}
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-fav]');
+  if (btn) toggleFav(btn.dataset.fav);
+});
+
+// ===== 11. Аккаунт (хранится в localStorage; учебная реализация) =====
+const USERS_KEY = 'weety:users', SESSION_KEY = 'weety:session';
+function getUsers() { try { return JSON.parse(localStorage.getItem(USERS_KEY)) || []; } catch (e) { return []; } }
+function saveUsers(list) { try { localStorage.setItem(USERS_KEY, JSON.stringify(list)); } catch (e) {} }
+function simpleHash(str) { let h = 5381; for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) | 0; return String(h); }
+function currentUser() {
+  try { const email = localStorage.getItem(SESSION_KEY); return getUsers().find((u) => u.email === email) || null; } catch (e) { return null; }
+}
+function logout() { try { localStorage.removeItem(SESSION_KEY); } catch (e) {} }
+function initHeader() {
+  syncFav();
+  const u = currentUser(), link = document.getElementById('accLink');
+  if (link && u) { link.setAttribute('aria-label', 'Личный кабинет: ' + u.name); link.title = u.name; link.querySelector('i').className = 'bi bi-person-check-fill text-success'; }
+}
+
+pages.favorites = function () {
+  const grid = document.getElementById('favGrid'), empty = document.getElementById('favEmpty'), info = document.getElementById('favInfo');
+  function render() {
+    const list = getFavs().map(findProduct).filter(Boolean);
+    empty.hidden = list.length > 0;
+    info.textContent = list.length ? `В избранном: ${list.length} ${plural(list.length, 'автомобиль', 'автомобиля', 'автомобилей')}` : '';
+    if (list.length) fillCards(grid, list); else grid.replaceChildren();
+    syncFav();
+  }
+  document.addEventListener('favschange', render);
+  render();
+};
+
+pages.account = function () {
+  const guest = document.getElementById('guestView'), userView = document.getElementById('userView');
+  function show() {
+    const u = currentUser();
+    guest.hidden = !!u; userView.hidden = !u;
+    if (!u) return;
+    document.getElementById('uAvatar').textContent = u.name.charAt(0).toUpperCase();
+    document.getElementById('uName').textContent = u.name;
+    document.getElementById('uMail').textContent = u.email;
+    const f = document.getElementById('profForm');
+    f.elements.name.value = u.name; f.elements.phone.value = u.phone || '';
+    document.getElementById('pfMail').value = u.email;
+    // заявки
+    const orders = JSON.parse(localStorage.getItem('weety:orders') || '[]').filter((o) => o.user === u.email).reverse();
+    const body = document.getElementById('ordBody'); body.replaceChildren();
+    orders.forEach((o) => {
+      const car = findProduct(o.car), tr = document.createElement('tr');
+      tr.append(el('td', 'text-nowrap', new Date(o.date).toLocaleDateString('ru-RU')), el('td', '', car ? car.name : o.car), el('td', '', o.pay));
+      const st = el('td'); st.append(el('span', 'badge text-bg-warning', 'В обработке')); tr.append(st);
+      body.append(tr);
+    });
+    document.getElementById('ordEmpty').hidden = orders.length > 0;
+    // избранное
+    const favs = getFavs().map(findProduct).filter(Boolean), fbox = document.getElementById('accFavs'); fbox.replaceChildren();
+    favs.forEach((p) => {
+      const row = el('div', 'fav-row');
+      const img = el('img'); img.src = p.image; img.alt = p.name; img.width = 96; img.height = 64; img.loading = 'lazy';
+      const info = el('div', 'flex-grow-1'); const a = el('a', 'fw-semibold', p.name); a.href = 'product.html?id=' + p.id;
+      info.append(a, el('div', 'text-secondary small', formatPrice(p.price)));
+      const rm = el('button', 'btn btn-sm btn-outline-danger', 'Убрать'); rm.type = 'button'; rm.dataset.fav = p.id;
+      row.append(img, info, rm); fbox.append(row);
+    });
+    document.getElementById('favEmpty2').hidden = favs.length > 0;
+    // отзывы
+    const revs = loadMyReviews().filter((r) => r.user === u.email).map((r) => ({ ...r, mine: true }));
+    const rbox = document.getElementById('accRevs'); rbox.replaceChildren(...revs.map((r) => reviewNode(r, (id) => { deleteReview(id); show(); })));
+    document.getElementById('revEmpty').hidden = revs.length > 0;
+    document.getElementById('stFav').textContent = favs.length;
+    document.getElementById('stOrd').textContent = orders.length;
+    document.getElementById('stRev').textContent = revs.length;
+    initHeader();
+  }
+  document.addEventListener('favschange', () => { if (!userView.hidden) show(); });
+  const loginErr = document.getElementById('loginErr'), regErr = document.getElementById('regErr');
+  bindForm(document.getElementById('loginForm'), (d) => {
+    const u = getUsers().find((x) => x.email === d.get('email').trim().toLowerCase());
+    if (!u || u.pass !== simpleHash(d.get('pass'))) { loginErr.textContent = 'Неверный email или пароль.'; loginErr.hidden = false; return; }
+    loginErr.hidden = true;
+    try { localStorage.setItem(SESSION_KEY, u.email); } catch (e) {}
+    toast(`Добро пожаловать, ${u.name}!`); show();
+  });
+  const regForm = document.getElementById('regForm');
+  regForm.elements.pass2.addEventListener('input', () => {
+    regForm.elements.pass2.setCustomValidity(regForm.elements.pass2.value === regForm.elements.pass.value ? '' : 'Пароли не совпадают');
+  });
+  regForm.elements.pass.addEventListener('input', () => regForm.elements.pass2.dispatchEvent(new Event('input')));
+  bindForm(regForm, (d) => {
+    const email = d.get('email').trim().toLowerCase(), users = getUsers();
+    if (users.some((x) => x.email === email)) { regErr.textContent = 'Пользователь с таким email уже существует.'; regErr.hidden = false; return; }
+    regErr.hidden = true;
+    users.push({ name: d.get('name').trim(), email, phone: d.get('phone'), pass: simpleHash(d.get('pass')) });
+    saveUsers(users);
+    try { localStorage.setItem(SESSION_KEY, email); } catch (e) {}
+    toast('Аккаунт создан. Добро пожаловать!'); show();
+  });
+  document.getElementById('profForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const f = e.target;
+    if (!f.checkValidity()) { f.classList.add('was-validated'); return; }
+    const users = getUsers(), u = users.find((x) => x.email === currentUser().email);
+    u.name = f.elements.name.value.trim(); u.phone = f.elements.phone.value;
+    saveUsers(users); toast('Профиль сохранён.'); show();
+  });
+  maskPhone(document.getElementById('profForm').elements.phone);
+  document.getElementById('logoutBtn').addEventListener('click', () => { logout(); toast('Вы вышли из аккаунта.'); show(); const l = document.getElementById('accLink'); l.querySelector('i').className = 'bi bi-person-circle'; l.setAttribute('aria-label', 'Личный кабинет'); });
+  show();
+};
+
+// ===== 12. Тема: светлая / тёмная с круговым «наплывом» =====
+function setTheme(theme) {
+  document.documentElement.setAttribute('data-bs-theme', theme);
+  try { localStorage.setItem('weety:theme', theme); } catch (e) {}
+  const icon = document.querySelector('#themeBtn i');
+  if (icon) icon.className = 'bi ' + (theme === 'dark' ? 'bi-sun-fill' : 'bi-moon-stars-fill');
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.content = theme === 'dark' ? '#0b0b0d' : '#f5f5f8';
+}
+function initTheme() {
+  const btn = document.getElementById('themeBtn');
+  setTheme(document.documentElement.getAttribute('data-bs-theme') || 'dark');
+  btn.addEventListener('click', () => {
+    const next = document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
+    const rect = btn.getBoundingClientRect();
+    const x = rect.left + rect.width / 2, y = rect.top + rect.height / 2;
+    const radius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+    const clip = [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`];
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { setTheme(next); return; }
+    if (document.startViewTransition) {
+      const t = document.startViewTransition(() => setTheme(next));
+      t.ready.then(() => document.documentElement.animate({ clipPath: clip }, { duration: 750, easing: 'ease-in-out', pseudoElement: '::view-transition-new(root)' }));
+    } else {
+      // Запасной вариант: круг цвета новой темы расширяется от кнопки
+      const overlay = el('div');
+      overlay.style.cssText = `position:fixed;inset:0;z-index:3000;pointer-events:none;background:${next === 'dark' ? '#0b0b0d' : '#f5f5f8'}`;
+      document.body.append(overlay);
+      overlay.animate({ clipPath: clip }, { duration: 650, easing: 'ease-in-out' }).onfinish = () => {
+        setTheme(next);
+        overlay.animate({ opacity: [1, 0] }, { duration: 300 }).onfinish = () => overlay.remove();
+      };
+    }
+  });
+}
+
+// ===== 13. Виджет чата поддержки =====
+const CHAT_KEY = 'weety:chat';
+function botReply(text) {
+  const t = text.toLowerCase();
+  const has = (...words) => words.some((w) => t.includes(w));
+  const prices = PRODUCTS.map((p) => p.price);
+  if (has('привет', 'здравств', 'добрый', 'хай')) return { text: 'Здравствуйте! Рады вас видеть. Чем могу помочь: подобрать авто, рассказать про доставку или кредит?' };
+  const found = PRODUCTS.filter((p) => p.name.toLowerCase().split(' ').some((w) => w.length > 3 && t.includes(w.replace('á', 'a'))) || (has('ламбо') && p.name.includes('Lambo')) || (has('феррари') && p.name.includes('Ferrari')) || (has('макларен') && p.name.includes('McLaren')) || (has('порш') && p.name.includes('Porsche')) || (has('ауди') && p.name.includes('Audi')));
+  if (found.length) return { text: 'Нашёл подходящие модели: ' + found.map((p) => `${p.name} — ${formatPrice(p.price)}`).join('; ') + '.', links: found.slice(0, 3).map((p) => ({ label: p.name, href: 'product.html?id=' + p.id })) };
+  if (has('скидк', 'акци', 'дешев')) {
+    const d = PRODUCTS.filter((p) => calcDiscount(p.price, p.oldPrice) > 0);
+    return { text: 'Сейчас действуют скидки: ' + d.map((p) => `${p.name} −${calcDiscount(p.price, p.oldPrice)}%`).join('; ') + '.', links: [{ label: 'Открыть каталог', href: 'catalog.html' }] };
+  }
+  if (has('цен', 'стоим', 'сколько', 'дорого', 'бюджет')) return { text: `Цены в каталоге — от ${formatPrice(Math.min(...prices))} до ${formatPrice(Math.max(...prices))}. Фильтр по цене есть на странице каталога.`, links: [{ label: 'Каталог', href: 'catalog.html' }] };
+  if (has('доставк', 'привез', 'привоз')) return { text: 'Доставляем в закрытом автовозе по всей России. Срок — от 2 до 10 дней в зависимости от города, страховка включена.' };
+  if (has('кредит', 'рассрочк', 'лизинг', 'ипотек')) return { text: 'Кредит — одобрение за 1 день, первоначальный взнос от 20%. Для компаний доступен лизинг. Оставьте заявку на странице автомобиля.' };
+  if (has('trade', 'трейд', 'обмен', 'выкуп')) return { text: 'Принимаем ваш автомобиль в trade-in: бесплатная оценка за 30 минут.' };
+  if (has('тест', 'драйв', 'посмотреть', 'смотр', 'приех')) return { text: 'Тест-драйв можно записать по телефону +7 (495) 123-45-67 или через форму в контактах. Ждём вас в салоне!', links: [{ label: 'Контакты', href: 'contacts.html' }] };
+  if (has('гаран')) return { text: 'На все автомобили действует гарантия до 24 месяцев. Перед продажей проводим 150-точечную диагностику.' };
+  if (has('налич')) { const n = PRODUCTS.filter((p) => getSpec(p, 'Наличие') === 'В наличии').length; return { text: `Сейчас в наличии ${n} из ${PRODUCTS.length} моделей, остальные — под заказ.` }; }
+  if (has('адрес', 'где', 'находит', 'добраться', 'проехать')) return { text: 'Мы находимся по адресу: г. Москва, Пресненская наб., 12. Карта — на странице контактов.', links: [{ label: 'Показать на карте', href: 'contacts.html' }] };
+  if (has('врем', 'работает', 'график', 'часы', 'открыт')) return { text: 'Работаем ежедневно с 09:00 до 21:00.' };
+  if (has('телефон', 'позвон', 'связ', 'почт', 'контакт', 'оператор', 'менеджер')) return { text: 'Телефон: +7 (495) 123-45-67, почта: info@weety-cars.ru. Менеджер ответит в рабочее время.', links: [{ label: 'Контакты', href: 'contacts.html' }] };
+  if (has('спасиб', 'благодар')) return { text: 'Пожалуйста! Если появятся вопросы — пишите.' };
+  if (has('пока', 'до свид')) return { text: 'До встречи! Хорошего дня.' };
+  return { text: 'Не уверен, что понял вопрос. Попробуйте выбрать тему ниже или позвоните нам: +7 (495) 123-45-67.' };
+}
+function initChat() {
+  const btn = el('button', 'btn btn-red', '');
+  btn.id = 'chatBtn'; btn.type = 'button'; btn.setAttribute('aria-label', 'Открыть чат с поддержкой'); btn.setAttribute('aria-expanded', 'false'); btn.setAttribute('aria-controls', 'chatPanel');
+  btn.innerHTML = '<i class="bi bi-chat-dots-fill"></i><span class="dot"></span>';
+  const panel = el('section', '');
+  panel.id = 'chatPanel'; panel.setAttribute('aria-label', 'Чат с поддержкой');
+  panel.innerHTML = `
+    <div class="chat__head"><i class="bi bi-headset fs-4"></i><div class="flex-grow-1"><div class="fw-semibold">Поддержка WEETY</div><small>● онлайн, отвечаем сразу</small></div>
+      <button type="button" class="btn-close" id="chatClear" aria-label="Закрыть чат"></button></div>
+    <div class="chat__log" id="chatLog" role="log" aria-live="polite"></div>
+    <div class="chat__chips" id="chatChips"></div>
+    <form class="chat__form" id="chatForm" autocomplete="off"><label class="visually-hidden" for="chatInput">Ваше сообщение</label>
+      <input class="form-control" id="chatInput" placeholder="Напишите вопрос…" maxlength="200" required>
+      <button class="btn btn-red" type="submit" aria-label="Отправить"><i class="bi bi-send-fill"></i></button></form>`;
+  document.body.append(panel, btn);
+  const log = panel.querySelector('#chatLog'), input = panel.querySelector('#chatInput'), chips = panel.querySelector('#chatChips');
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem(CHAT_KEY)) || []; } catch (e) {}
+  const save = () => { try { localStorage.setItem(CHAT_KEY, JSON.stringify(history.slice(-40))); } catch (e) {} };
+  function draw(m) {
+    const b = el('div', 'msg ' + (m.from === 'me' ? 'msg--me' : 'msg--bot'));
+    b.append(el('span', '', m.text));
+    (m.links || []).forEach((l) => { const a = el('a', 'btn btn-sm btn-outline-danger d-block', l.label); a.href = l.href; b.append(a); });
+    log.append(b); log.scrollTop = log.scrollHeight;
+  }
+  function say(m) { history.push(m); save(); draw(m); }
+  function ask(text) {
+    say({ from: 'me', text });
+    const typing = el('div', 'msg msg--bot typing'); typing.innerHTML = '<span></span><span></span><span></span>'; typing.setAttribute('aria-label', 'Оператор печатает');
+    log.append(typing); log.scrollTop = log.scrollHeight;
+    setTimeout(() => { typing.remove(); say({ from: 'bot', ...botReply(text) }); }, 600 + Math.random() * 600);
+  }
+  ['Доставка', 'Кредит', 'Скидки', 'Тест-драйв', 'Контакты'].forEach((c) => {
+    const b = el('button', 'btn btn-sm btn-outline-danger rounded-pill', c); b.type = 'button';
+    b.addEventListener('click', () => ask(c)); chips.append(b);
+  });
+  history.forEach(draw);
+  function open(on) {
+    panel.classList.toggle('open', on);
+    btn.setAttribute('aria-expanded', String(on));
+    btn.querySelector('.dot').style.display = on ? 'none' : '';
+    if (on) {
+      if (!history.length) { const u = currentUser(); say({ from: 'bot', text: `${u ? u.name + ', здравствуйте' : 'Здравствуйте'}! Я виртуальный помощник WEETY. Спросите про автомобили, доставку, кредит или выберите тему ниже.` }); }
+      input.focus();
+    } else btn.focus();
+  }
+  btn.addEventListener('click', () => open(!panel.classList.contains('open')));
+  panel.querySelector('#chatClear').addEventListener('click', () => open(false));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && panel.classList.contains('open')) open(false); });
+  panel.querySelector('#chatForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const text = input.value.trim(); if (!text) return;
+    input.value = ''; ask(text);
+  });
+}
+
+// ===== 14. Запуск =====
 document.addEventListener('DOMContentLoaded', () => {
   initOrderModal();
   initToTop();
+  initTheme();
+  initChat();
   const page = document.body.dataset.page;
   if (pages[page]) pages[page]();
+  initHeader();
   observeReveal();
   initCounters();
   consoleDemo();

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ru" data-bs-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Личный кабинет: профиль, заказы, избранное, мои отзывы.">
+<meta name="theme-color" content="#0b0b0d">
+<script>try{var t=localStorage.getItem("weety:theme")||"dark";document.documentElement.setAttribute("data-bs-theme",t)}catch(e){}</script>
+<title>Личный кабинет — WEETY Supercars</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+<script src="js/data.js" defer></script>
+<script src="js/main.js" defer></script>
+</head>
+<body data-page="account">
+<header>
+<nav class="navbar navbar-expand-lg fixed-top" aria-label="Основная навигация">
+  <div class="container">
+    <a class="navbar-brand" href="index.html"><span>WEETY</span><small>SUPERCARS</small></a>
+    <div class="d-flex align-items-center gap-1 ms-auto ms-lg-0 order-2 order-lg-3">
+      <button class="icon-btn" type="button" id="themeBtn" aria-label="Переключить тему оформления"><i class="bi bi-sun-fill"></i></button>
+      <a class="icon-btn position-relative" href="favorites.html" aria-label="Избранное"><i class="bi bi-heart"></i><span class="badge rounded-pill bg-danger fav-badge" id="favCount" hidden>0</span></a>
+      <a class="icon-btn active" href="account.html" id="accLink" aria-label="Личный кабинет"><i class="bi bi-person-circle"></i></a>
+    </div>
+    <button class="navbar-toggler order-3 ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#menu" aria-controls="menu" aria-expanded="false" aria-label="Открыть меню"><span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse order-4 order-lg-2" id="menu"><ul class="navbar-nav ms-auto me-lg-3 gap-lg-2"><li class="nav-item"><a class="nav-link" href="index.html">Главная</a></li><li class="nav-item"><a class="nav-link" href="catalog.html">Каталог</a></li><li class="nav-item"><a class="nav-link" href="about.html">О нас</a></li><li class="nav-item"><a class="nav-link" href="contacts.html">Контакты</a></li></ul></div>
+  </div>
+</nav>
+</header>
+<main>
+<section class="page-hero"><div class="container"><h1>Личный кабинет</h1><p class="text-secondary lead mb-0">Профиль, заявки, избранное и ваши отзывы в одном месте.</p></div></section>
+<section class="section"><div class="container">
+  <!-- Гость -->
+  <div id="guestView" class="row justify-content-center"><div class="col-lg-6">
+    <div class="form-box">
+      <ul class="nav nav-pills nav-fill mb-4" role="tablist">
+        <li class="nav-item" role="presentation"><button class="nav-link active" id="tabLogin" data-bs-toggle="pill" data-bs-target="#paneLogin" type="button" role="tab" aria-controls="paneLogin" aria-selected="true">Вход</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link" id="tabReg" data-bs-toggle="pill" data-bs-target="#paneReg" type="button" role="tab" aria-controls="paneReg" aria-selected="false">Регистрация</button></li>
+      </ul>
+      <div class="tab-content">
+        <div class="tab-pane fade show active" id="paneLogin" role="tabpanel" aria-labelledby="tabLogin">
+          <form id="loginForm" novalidate>
+            <div class="mb-3"><label class="form-label" for="lMail">Email</label><input class="form-control" id="lMail" name="email" type="email" required autocomplete="email"><div class="invalid-feedback">Введите email.</div></div>
+            <div class="mb-3"><label class="form-label" for="lPass">Пароль</label><input class="form-control" id="lPass" name="pass" type="password" required autocomplete="current-password"><div class="invalid-feedback">Введите пароль.</div></div>
+            <div class="alert alert-danger py-2" id="loginErr" role="alert" hidden></div>
+            <button class="btn btn-red w-100" type="submit">Войти</button>
+          </form>
+        </div>
+        <div class="tab-pane fade" id="paneReg" role="tabpanel" aria-labelledby="tabReg">
+          <form id="regForm" novalidate>
+            <div class="mb-3"><label class="form-label" for="gName">Имя</label><input class="form-control" id="gName" name="name" required minlength="2" autocomplete="name"><div class="invalid-feedback">Введите имя.</div></div>
+            <div class="row"><div class="col-md-6 mb-3"><label class="form-label" for="gMail">Email</label><input class="form-control" id="gMail" name="email" type="email" required autocomplete="email"><div class="invalid-feedback">Введите корректный email.</div></div>
+            <div class="col-md-6 mb-3"><label class="form-label" for="gPhone">Телефон</label><input class="form-control" id="gPhone" name="phone" type="tel" placeholder="+7 (___) ___-__-__" pattern="\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}" autocomplete="tel"><div class="invalid-feedback">Введите телефон полностью или оставьте пустым.</div></div></div>
+            <div class="row"><div class="col-md-6 mb-3"><label class="form-label" for="gPass">Пароль</label><input class="form-control" id="gPass" name="pass" type="password" required minlength="6" autocomplete="new-password"><div class="invalid-feedback">Минимум 6 символов.</div></div>
+            <div class="col-md-6 mb-3"><label class="form-label" for="gPass2">Повторите пароль</label><input class="form-control" id="gPass2" name="pass2" type="password" required autocomplete="new-password"><div class="invalid-feedback">Пароли не совпадают.</div></div></div>
+            <div class="alert alert-danger py-2" id="regErr" role="alert" hidden></div>
+            <button class="btn btn-red w-100" type="submit">Создать аккаунт</button>
+          </form>
+        </div>
+      </div>
+      <p class="small text-secondary mt-3 mb-0">Учебный проект: данные аккаунта хранятся только в вашем браузере.</p>
+    </div>
+  </div></div>
+
+  <!-- Пользователь -->
+  <div id="userView" hidden>
+    <div class="form-box account-hero d-flex flex-wrap align-items-center gap-3 mb-4">
+      <div class="avatar" id="uAvatar"></div>
+      <div class="flex-grow-1"><h2 class="h4 mb-0" id="uName"></h2><div class="text-secondary" id="uMail"></div></div>
+      <button class="btn btn-outline-light" type="button" id="logoutBtn"><i class="bi bi-box-arrow-right"></i> Выйти</button>
+    </div>
+    <div class="row g-3 mb-4">
+      <div class="col-4"><div class="tile"><strong id="stFav">0</strong><small class="text-secondary">в избранном</small></div></div>
+      <div class="col-4"><div class="tile"><strong id="stOrd">0</strong><small class="text-secondary">заявок</small></div></div>
+      <div class="col-4"><div class="tile"><strong id="stRev">0</strong><small class="text-secondary">отзывов</small></div></div>
+    </div>
+    <ul class="nav nav-pills mb-3 flex-wrap gap-1" role="tablist">
+      <li class="nav-item" role="presentation"><button class="nav-link active" id="tOrd" data-bs-toggle="pill" data-bs-target="#pOrders" type="button" role="tab" aria-controls="pOrders" aria-selected="true">Мои заявки</button></li>
+      <li class="nav-item" role="presentation"><button class="nav-link" id="tFav" data-bs-toggle="pill" data-bs-target="#pFavs" type="button" role="tab" aria-controls="pFavs" aria-selected="false">Избранное</button></li>
+      <li class="nav-item" role="presentation"><button class="nav-link" id="tRev" data-bs-toggle="pill" data-bs-target="#pRevs" type="button" role="tab" aria-controls="pRevs" aria-selected="false">Мои отзывы</button></li>
+      <li class="nav-item" role="presentation"><button class="nav-link" id="tProf" data-bs-toggle="pill" data-bs-target="#pProf" type="button" role="tab" aria-controls="pProf" aria-selected="false">Профиль</button></li>
+    </ul>
+    <div class="tab-content">
+      <div class="tab-pane fade show active" id="pOrders" role="tabpanel" aria-labelledby="tOrd">
+        <div class="table-responsive"><table class="table table-dark table-striped align-middle"><caption class="visually-hidden">Ваши заявки</caption>
+          <thead><tr><th scope="col">Дата</th><th scope="col">Автомобиль</th><th scope="col">Оплата</th><th scope="col">Статус</th></tr></thead><tbody id="ordBody"></tbody></table></div>
+        <p class="text-secondary" id="ordEmpty" hidden>Заявок пока нет. <a href="catalog.html">Выбрать автомобиль</a></p>
+      </div>
+      <div class="tab-pane fade" id="pFavs" role="tabpanel" aria-labelledby="tFav"><div class="d-grid gap-2" id="accFavs"></div><p class="text-secondary" id="favEmpty2" hidden>В избранном пусто. <a href="catalog.html">Перейти в каталог</a></p></div>
+      <div class="tab-pane fade" id="pRevs" role="tabpanel" aria-labelledby="tRev"><div class="row g-3" id="accRevs"></div><p class="text-secondary" id="revEmpty" hidden>Вы ещё не оставляли отзывов. <a href="reviews.html">Написать отзыв</a></p></div>
+      <div class="tab-pane fade" id="pProf" role="tabpanel" aria-labelledby="tProf">
+        <form id="profForm" class="form-box" style="max-width:520px" novalidate>
+          <div class="mb-3"><label class="form-label" for="pfName">Имя</label><input class="form-control" id="pfName" name="name" required minlength="2"><div class="invalid-feedback">Введите имя.</div></div>
+          <div class="mb-3"><label class="form-label" for="pfMail">Email</label><input class="form-control" id="pfMail" type="email" readonly></div>
+          <div class="mb-3"><label class="form-label" for="pfPhone">Телефон</label><input class="form-control" id="pfPhone" name="phone" type="tel" placeholder="+7 (___) ___-__-__" pattern="\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}"><div class="invalid-feedback">Введите телефон полностью.</div></div>
+          <button class="btn btn-red" type="submit">Сохранить</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div></section></main>
+<footer class="footer">
+<div class="container">
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <a class="navbar-brand footer-brand text-decoration-none fs-4" href="index.html"><span style="color:var(--w-red)">WEETY</span> SUPERCARS</a>
+      <p class="text-secondary mt-3 pe-lg-5">Премиальный салон суперкаров: Ferrari, Lamborghini, McLaren, Porsche и другие. Подбор, проверка, оформление и доставка по всей России.</p>
+    </div>
+    <div class="col-6 col-lg-3">
+      <h2>Навигация</h2>
+      <nav aria-label="Навигация в подвале"><ul class="list-unstyled">
+        <li><a href="index.html">Главная</a></li><li><a href="catalog.html">Каталог</a></li><li><a href="about.html">О нас</a></li>
+      </ul></nav>
+    </div>
+    <div class="col-12 col-lg-4">
+      <h2>Контакты</h2>
+      <ul class="list-unstyled contacts">
+        <li><i class="bi bi-geo-alt-fill"></i><span>г. Москва, Пресненская наб., 12</span></li>
+        <li><i class="bi bi-telephone-fill"></i><a href="tel:+74951234567">+7 (495) 123-45-67</a></li>
+        <li><i class="bi bi-clock-fill"></i><span>Ежедневно, 09:00–21:00</span></li>
+        <li><i class="bi bi-envelope-fill"></i><a href="mailto:info@weety-cars.ru">info@weety-cars.ru</a></li>
+      </ul>
+    </div>
+  </div>
+  <hr class="border-secondary mt-4">
+  <p class="text-secondary small text-center mb-0">© 2026 WEETY Supercars. Учебный проект.</p>
+</div>
+</footer>
+</body>
+</html>
