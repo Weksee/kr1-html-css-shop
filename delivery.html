@@ -3,33 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="ОПИСАНИЕ">
+  <meta name="description" content="Способы доставки суперкаров и порядок оплаты.">
+  <meta name="theme-color" content="#0c0c0f">
   <title>Доставка и оплата — SuperCars</title>
   <link rel="stylesheet" href="css/style.css">
   <script src="js/products.js" defer></script>
   <script src="js/main.js" defer></script>
 </head>
-<body>
-  <header class="site-header">
+<body id="top">
+  <a class="skip-link" href="#main">Перейти к содержимому</a>
+    <header class="site-header">
     <div class="site-header__inner">
       <a class="site-header__logo" href="index.html">SuperCars</a>
 
-      <nav class="site-nav" aria-label="Основная навигация">
+      <button class="site-header__burger" type="button" aria-expanded="false" aria-controls="site-nav">Меню</button>
+
+      <nav class="site-nav" id="site-nav" aria-label="Основная навигация">
         <ul class="site-nav__list">
           <li class="site-nav__item"><a class="site-nav__link" href="index.html">Главная</a></li>
           <li class="site-nav__item"><a class="site-nav__link" href="catalog.html">Каталог</a></li>
           <li class="site-nav__item"><a class="site-nav__link" href="category.html">Категории</a></li>
-          <li class="site-nav__item"><a class="site-nav__link" href="about.html">О нас</a></li>
-          <li class="site-nav__item"><a class="site-nav__link site-nav__link--active" href="delivery.html">Доставка</a></li>
-          <li class="site-nav__item"><a class="site-nav__link" href="faq.html">Вопросы</a></li>
-          <li class="site-nav__item"><a class="site-nav__link" href="order.html">Заявка</a></li>
-          <li class="site-nav__item"><a class="site-nav__link" href="contacts.html">Контакты</a></li>
+          <li class="site-nav__item"><a class="site-nav__link site-nav__link--cta" href="order.html">Заявка</a></li>
         </ul>
       </nav>
     </div>
   </header>
 
-  <main class="page">
+  <main class="page" id="main">
     <nav class="breadcrumbs" aria-label="Хлебные крошки">
       <a class="breadcrumbs__link" href="index.html">Главная</a>
       <span class="breadcrumbs__current">Доставка и оплата</span>
@@ -41,7 +41,8 @@
     </section>
 
     <section class="section">
-      <table class="product-table">
+      <div class="table-wrap" role="region" aria-label="Таблица способов получения" tabindex="0">
+      <table class="product-table product-table--stack">
         <caption class="product-table__caption">Способы получения</caption>
         <thead>
           <tr>
@@ -52,22 +53,23 @@
         </thead>
         <tbody>
           <tr>
-            <td class="product-table__cell">Самовывоз из салона</td>
-            <td class="product-table__cell">В день сделки</td>
-            <td class="product-table__cell">Бесплатно</td>
+            <td class="product-table__cell" data-label="Способ">Самовывоз из салона</td>
+            <td class="product-table__cell" data-label="Срок">В день сделки</td>
+            <td class="product-table__cell" data-label="Стоимость">Бесплатно</td>
           </tr>
           <tr>
-            <td class="product-table__cell">Доставка автовозом по России</td>
-            <td class="product-table__cell">3–7 дней</td>
-            <td class="product-table__cell">от 150 000 руб.</td>
+            <td class="product-table__cell" data-label="Способ">Доставка автовозом по России</td>
+            <td class="product-table__cell" data-label="Срок">3–7 дней</td>
+            <td class="product-table__cell" data-label="Стоимость">от 150 000 руб.</td>
           </tr>
           <tr>
-            <td class="product-table__cell">Международная доставка</td>
-            <td class="product-table__cell">14–30 дней</td>
-            <td class="product-table__cell">Рассчитывается отдельно</td>
+            <td class="product-table__cell" data-label="Способ">Международная доставка</td>
+            <td class="product-table__cell" data-label="Срок">14–30 дней</td>
+            <td class="product-table__cell" data-label="Стоимость">Рассчитывается отдельно</td>
           </tr>
         </tbody>
       </table>
+      </div>
     </section>
 
     <section class="section">
@@ -88,7 +90,34 @@
 
   <footer class="site-footer">
     <div class="site-footer__inner">
-      <p class="site-footer__text">&copy; 2026 Учебный проект. Все права защищены.</p>
+      <div class="site-footer__brand">
+        <a class="site-header__logo" href="index.html">SuperCars</a>
+        <p class="site-footer__text">Суперкары Ferrari, Lamborghini, McLaren, Pagani, Aston Martin, Porsche и Audi. Учебный проект: реальные заказы не принимаются.</p>
+      </div>
+      <nav aria-label="Разделы сайта">
+        <h2 class="site-footer__title">Разделы</h2>
+        <ul class="site-footer__list">
+          <li><a class="site-footer__link" href="index.html">Главная</a></li>
+          <li><a class="site-footer__link" href="catalog.html">Каталог</a></li>
+          <li><a class="site-footer__link" href="category.html">Категории</a></li>
+          <li><a class="site-footer__link" href="about.html">О нас</a></li>
+          <li><a class="site-footer__link" href="delivery.html">Доставка и оплата</a></li>
+          <li><a class="site-footer__link" href="faq.html">Вопросы и ответы</a></li>
+          <li><a class="site-footer__link" href="order.html">Заявка</a></li>
+          <li><a class="site-footer__link" href="contacts.html">Контакты</a></li>
+        </ul>
+      </nav>
+      <div>
+        <h2 class="site-footer__title">Контакты</h2>
+        <ul class="site-footer__list">
+          <li><a class="site-footer__link" href="tel:+79000000000">+7 (900) 000-00-00</a></li>
+          <li><a class="site-footer__link" href="mailto:info@example.com">info@example.com</a></li>
+          <li class="site-footer__text">пн–пт, 9:00–18:00</li>
+        </ul>
+      </div>
+    </div>
+    <div class="site-footer__bottom">
+      <p class="site-footer__text">&copy; 2026 SuperCars. Все права защищены.</p>
       <p class="site-footer__text">Дисциплина: Фронтенд и бэкенд разработка</p>
     </div>
   </footer>

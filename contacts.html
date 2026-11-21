@@ -1,67 +1,81 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-bs-theme="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Контактная информация учебного интернет-магазина.">
-  <title>Контакты — Учебный интернет-магазин</title>
-  <link rel="stylesheet" href="css/style.css">
-  <script src="js/products.js"></script>
-  <script src="js/main.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Адрес, телефон, время работы, почта и карта салона WEETY Supercars.">
+<meta name="theme-color" content="#0b0b0d">
+<title>Контакты — WEETY Supercars</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+<script src="js/data.js" defer></script>
+<script src="js/main.js" defer></script>
 </head>
-<body>
-  <header class="site-header">
-    <div class="site-header__inner">
-      <a class="site-header__logo" href="index.html">SuperCars</a>
-
-      <nav class="site-nav" aria-label="Основная навигация">
-        <ul class="site-nav__list">
-          <li class="site-nav__item"><a class="site-nav__link" href="index.html">Главная</a></li>
-          <li class="site-nav__item"><a class="site-nav__link" href="catalog.html">Каталог</a></li>
-          <li class="site-nav__item"><a class="site-nav__link" href="category.html">Категории</a></li>
-          <li class="site-nav__item"><a class="site-nav__link" href="about.html">О нас</a></li>
-          <li class="site-nav__item"><a class="site-nav__link" href="delivery.html">Доставка</a></li>
-          <li class="site-nav__item"><a class="site-nav__link" href="faq.html">Вопросы</a></li>
-          <li class="site-nav__item"><a class="site-nav__link" href="order.html">Заявка</a></li>
-          <li class="site-nav__item"><a class="site-nav__link site-nav__link--active" href="contacts.html">Контакты</a></li>
-        </ul>
-      </nav>
+<body data-page="contacts">
+<header>
+<nav class="navbar navbar-expand-lg fixed-top" aria-label="Основная навигация">
+  <div class="container">
+    <a class="navbar-brand" href="index.html"><span>WEETY</span><small>SUPERCARS</small></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu" aria-controls="menu" aria-expanded="false" aria-label="Открыть меню"><span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="menu"><ul class="navbar-nav ms-auto gap-lg-2"><li class="nav-item"><a class="nav-link" href="index.html">Главная</a></li><li class="nav-item"><a class="nav-link" href="catalog.html">Каталог</a></li><li class="nav-item"><a class="nav-link" href="about.html">О нас</a></li><li class="nav-item"><a class="nav-link active" href="contacts.html" aria-current="page">Контакты</a></li></ul></div>
+  </div>
+</nav>
+</header>
+<main>
+<section class="page-hero"><div class="container"><h1>Контакты</h1><p class="text-secondary lead mb-0">Приезжайте в салон или напишите нам.</p></div></section>
+<section class="section"><div class="container">
+  <div class="row g-3 mb-5">
+    <div class="col-sm-6 col-lg-3 reveal"><div class="contact-card"><i class="bi bi-geo-alt-fill"></i><div><small class="text-secondary">Адрес</small><div>г. Москва, Пресненская наб., 12</div></div></div></div>
+    <div class="col-sm-6 col-lg-3 reveal"><div class="contact-card"><i class="bi bi-telephone-fill"></i><div><small class="text-secondary">Телефон</small><div><a href="tel:+74951234567">+7 (495) 123-45-67</a></div></div></div></div>
+    <div class="col-sm-6 col-lg-3 reveal"><div class="contact-card"><i class="bi bi-clock-fill"></i><div><small class="text-secondary">Время работы</small><div>Ежедневно, 09:00–21:00</div></div></div></div>
+    <div class="col-sm-6 col-lg-3 reveal"><div class="contact-card"><i class="bi bi-envelope-fill"></i><div><small class="text-secondary">Почта</small><div><a href="mailto:info@weety-cars.ru">info@weety-cars.ru</a></div></div></div></div>
+  </div>
+  <div class="row g-4">
+    <div class="col-lg-6"><h2 class="section__title">Напишите нам</h2>
+      <form id="contactForm" class="form-box" novalidate>
+        <div class="mb-3"><label class="form-label" for="cName">Имя</label><input class="form-control" id="cName" name="name" required minlength="2" autocomplete="name"><div class="invalid-feedback">Введите имя.</div></div>
+        <div class="row"><div class="col-md-6 mb-3"><label class="form-label" for="cPhone">Телефон</label><input class="form-control" id="cPhone" name="phone" type="tel" required pattern="\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}" placeholder="+7 (___) ___-__-__" autocomplete="tel"><div class="invalid-feedback">Введите телефон полностью.</div></div>
+        <div class="col-md-6 mb-3"><label class="form-label" for="cMail">Email</label><input class="form-control" id="cMail" name="email" type="email" required autocomplete="email"><div class="invalid-feedback">Введите корректный email.</div></div></div>
+        <div class="mb-3"><label class="form-label" for="cMsg">Сообщение</label><textarea class="form-control" id="cMsg" name="msg" rows="4" required minlength="10"></textarea><div class="invalid-feedback">Минимум 10 символов.</div></div>
+        <button class="btn btn-red w-100" type="submit">Отправить</button>
+      </form></div>
+    <div class="col-lg-6"><h2 class="section__title">Мы на карте</h2><div class="map-wrap"><iframe title="Карта: шоурум WEETY Supercars, Пресненская набережная, 12, Москва" loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=37.5290%2C55.7440%2C37.5440%2C55.7520&amp;layer=mapnik&amp;marker=55.7480%2C37.5365"></iframe></div><p class="small mt-2"><a href="https://www.openstreetmap.org/?mlat=55.7480&amp;mlon=37.5365#map=16/55.7480/37.5365" target="_blank" rel="noopener">Открыть карту целиком</a></p></div>
+  </div>
+</div></section>
+<section class="section pt-0"><div class="container"><h2 class="section__title">Частые вопросы</h2>
+<div class="accordion" id="faq">
+  <div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#f1" aria-expanded="true" aria-controls="f1">Можно ли посмотреть автомобиль вживую?</button></h3><div id="f1" class="accordion-collapse collapse show" data-bs-parent="#faq"><div class="accordion-body">Да, приезжайте в салон в часы работы. Рекомендуем записаться по телефону.</div></div></div>
+  <div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#f2" aria-expanded="false" aria-controls="f2">Есть ли доставка в другие города?</button></h3><div id="f2" class="accordion-collapse collapse" data-bs-parent="#faq"><div class="accordion-body">Да, доставляем в закрытом автовозе по всей России.</div></div></div>
+  <div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#f3" aria-expanded="false" aria-controls="f3">Принимаете автомобиль в trade-in?</button></h3><div id="f3" class="accordion-collapse collapse" data-bs-parent="#faq"><div class="accordion-body">Да, оценим ваш автомобиль бесплатно за 30 минут.</div></div></div>
+</div></div></section></main>
+<footer class="footer">
+<div class="container">
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <a class="navbar-brand text-white text-decoration-none fs-4" href="index.html"><span style="color:var(--w-red)">WEETY</span> SUPERCARS</a>
+      <p class="text-secondary mt-3 pe-lg-5">Премиальный салон суперкаров: Ferrari, Lamborghini, McLaren, Porsche и другие. Подбор, проверка, оформление и доставка по всей России.</p>
     </div>
-  </header>
-
-  <main class="page">
-    <nav class="breadcrumbs" aria-label="Хлебные крошки">
-      <a class="breadcrumbs__link" href="index.html">Главная</a>
-      <span class="breadcrumbs__current">Контакты</span>
-    </nav>
-
-    <section class="section">
-      <h1 class="section__title">Контакты</h1>
-      <p>Здесь размещается контактная информация учебного интернет-магазина.</p>
-
-      <ul class="contacts-list">
-        <li class="contacts-list__item">Телефон: +7 (900) 000-00-00</li>
-        <li class="contacts-list__item">E-mail: info@example.com</li>
-        <li class="contacts-list__item">Адрес: г. Москва, учебный проект</li>
-        <li class="contacts-list__item">Часы работы: пн–пт, 9:00–18:00</li>
+    <div class="col-6 col-lg-3">
+      <h2>Навигация</h2>
+      <nav aria-label="Навигация в подвале"><ul class="list-unstyled">
+        <li><a href="index.html">Главная</a></li><li><a href="catalog.html">Каталог</a></li><li><a href="about.html">О нас</a></li><li><a href="reviews.html">Отзывы</a></li>
+      </ul></nav>
+    </div>
+    <div class="col-12 col-lg-4">
+      <h2>Контакты</h2>
+      <ul class="list-unstyled contacts">
+        <li><i class="bi bi-geo-alt-fill"></i><span>г. Москва, Пресненская наб., 12</span></li>
+        <li><i class="bi bi-telephone-fill"></i><a href="tel:+74951234567">+7 (495) 123-45-67</a></li>
+        <li><i class="bi bi-clock-fill"></i><span>Ежедневно, 09:00–21:00</span></li>
+        <li><i class="bi bi-envelope-fill"></i><a href="mailto:info@weety-cars.ru">info@weety-cars.ru</a></li>
       </ul>
-    </section>
-
-    <section class="section" id="feedback">
-      <h2 class="section__title">Обратная связь</h2>
-      <p>Чтобы отправить заявку, заполните форму на странице «Заявка».</p>
-      <a class="button button--primary" href="order.html">Перейти к форме</a>
-    </section>
-  </main>
-
-  <footer class="site-footer">
-    <div class="site-footer__inner">
-      <p class="site-footer__text">&copy; 2026 Учебный проект. Все права защищены.</p>
-      <p class="site-footer__text">Дисциплина: Фронтенд и бэкенд разработка</p>
     </div>
-  </footer>
-
-  <a class="to-top" href="#top" aria-label="Наверх" title="Наверх"></a>
+  </div>
+  <hr class="border-secondary mt-4">
+  <p class="text-secondary small text-center mb-0">© 2026 WEETY Supercars. Учебный проект.</p>
+</div>
+</footer>
+</body>
 </html>
-
-

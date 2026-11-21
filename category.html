@@ -3,33 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="ОПИСАНИЕ">
-  <title>Категории— SuperCars</title>
+  <meta name="description" content="Категории суперкаров: итальянские, британские и немецкие.">
+  <meta name="theme-color" content="#0c0c0f">
+  <title>Категории — SuperCars</title>
   <link rel="stylesheet" href="css/style.css">
   <script src="js/products.js" defer></script>
   <script src="js/main.js" defer></script>
 </head>
-<body>
-  <header class="site-header">
+<body id="top">
+  <a class="skip-link" href="#main">Перейти к содержимому</a>
+    <header class="site-header">
     <div class="site-header__inner">
       <a class="site-header__logo" href="index.html">SuperCars</a>
 
-      <nav class="site-nav" aria-label="Основная навигация">
+      <button class="site-header__burger" type="button" aria-expanded="false" aria-controls="site-nav">Меню</button>
+
+      <nav class="site-nav" id="site-nav" aria-label="Основная навигация">
         <ul class="site-nav__list">
           <li class="site-nav__item"><a class="site-nav__link" href="index.html">Главная</a></li>
           <li class="site-nav__item"><a class="site-nav__link" href="catalog.html">Каталог</a></li>
-          <li class="site-nav__item"><a class="site-nav__link site-nav__link--active" href="category.html">Категории</a></li>
-          <li class="site-nav__item"><a class="site-nav__link" href="about.html">О нас</a></li>
-          <li class="site-nav__item"><a class="site-nav__link" href="delivery.html">Доставка</a></li>
-          <li class="site-nav__item"><a class="site-nav__link" href="faq.html">Вопросы</a></li>
-          <li class="site-nav__item"><a class="site-nav__link" href="order.html">Заявка</a></li>
-          <li class="site-nav__item"><a class="site-nav__link" href="contacts.html">Контакты</a></li>
+          <li class="site-nav__item"><a class="site-nav__link site-nav__link--active" href="category.html" aria-current="page">Категории</a></li>
+          <li class="site-nav__item"><a class="site-nav__link site-nav__link--cta" href="order.html">Заявка</a></li>
         </ul>
       </nav>
     </div>
   </header>
 
-  <main class="page">
+  <main class="page" id="main">
     <nav class="breadcrumbs" id="breadcrumbs" aria-label="Хлебные крошки"></nav>
 
     <div id="category-root"></div>
@@ -37,7 +37,34 @@
 
   <footer class="site-footer">
     <div class="site-footer__inner">
-      <p class="site-footer__text">&copy; 2026 Учебный проект. Все права защищены.</p>
+      <div class="site-footer__brand">
+        <a class="site-header__logo" href="index.html">SuperCars</a>
+        <p class="site-footer__text">Суперкары Ferrari, Lamborghini, McLaren, Pagani, Aston Martin, Porsche и Audi. Учебный проект: реальные заказы не принимаются.</p>
+      </div>
+      <nav aria-label="Разделы сайта">
+        <h2 class="site-footer__title">Разделы</h2>
+        <ul class="site-footer__list">
+          <li><a class="site-footer__link" href="index.html">Главная</a></li>
+          <li><a class="site-footer__link" href="catalog.html">Каталог</a></li>
+          <li><a class="site-footer__link" href="category.html">Категории</a></li>
+          <li><a class="site-footer__link" href="about.html">О нас</a></li>
+          <li><a class="site-footer__link" href="delivery.html">Доставка и оплата</a></li>
+          <li><a class="site-footer__link" href="faq.html">Вопросы и ответы</a></li>
+          <li><a class="site-footer__link" href="order.html">Заявка</a></li>
+          <li><a class="site-footer__link" href="contacts.html">Контакты</a></li>
+        </ul>
+      </nav>
+      <div>
+        <h2 class="site-footer__title">Контакты</h2>
+        <ul class="site-footer__list">
+          <li><a class="site-footer__link" href="tel:+79000000000">+7 (900) 000-00-00</a></li>
+          <li><a class="site-footer__link" href="mailto:info@example.com">info@example.com</a></li>
+          <li class="site-footer__text">пн–пт, 9:00–18:00</li>
+        </ul>
+      </div>
+    </div>
+    <div class="site-footer__bottom">
+      <p class="site-footer__text">&copy; 2026 SuperCars. Все права защищены.</p>
       <p class="site-footer__text">Дисциплина: Фронтенд и бэкенд разработка</p>
     </div>
   </footer>

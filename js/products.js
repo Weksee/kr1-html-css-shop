@@ -4,14 +4,20 @@
 const CATEGORIES = {
   italy: {
     title: 'Итальянские суперкары',
+    image: 'images/lamborghini-huracan.png',
+    imageAlt: 'Lamborghini Huracán — пример итальянского суперкара',
     text: 'Ferrari, Lamborghini и Pagani — классика мирового автопрома: громкие моторы, яркий дизайн и спортивные традиции.'
   },
   uk: {
     title: 'Британские суперкары',
+    image: 'images/mclaren-750s.png',
+    imageAlt: 'McLaren 750S — пример британского суперкара',
     text: 'McLaren и Aston Martin делают ставку на малый вес и точность управления: лёгкие кузова и мощные моторы.'
   },
   germany: {
     title: 'Немецкие суперкары',
+    image: 'images/porsche-911-gt3-rs.png',
+    imageAlt: 'Porsche 911 GT3 RS — пример немецкого суперкара',
     text: 'Porsche и Audi — точная инженерия и отличная управляемость: суперкары, на которых удобно ездить каждый день.'
   }
 };
@@ -295,5 +301,3 @@ const PRODUCTS = [
     ]
   }
 ];
-
-

@@ -1,197 +1,103 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-bs-theme="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Главная страница учебного интернет-магазина.">
-  <title>Учебный интернет-магазин</title>
-  <link rel="stylesheet" href="css/style.css">
-  <script src="js/products.js"></script>
-  <script src="js/main.js" defer></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Купить суперкар: Ferrari, Lamborghini, McLaren, Porsche. Каталог, отзывы, доставка.">
+<meta name="theme-color" content="#0b0b0d">
+<title>WEETY Supercars — салон суперкаров</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+<script src="js/data.js" defer></script>
+<script src="js/main.js" defer></script>
 </head>
-<body>
-<header class="site-header">
-    <div class="site-header__inner">
-      <a class="site-header__logo" href="index.html">SuperCars</a>
+<body data-page="home">
+<header>
+<nav class="navbar navbar-expand-lg fixed-top" aria-label="Основная навигация">
+  <div class="container">
+    <a class="navbar-brand" href="index.html"><span>WEETY</span><small>SUPERCARS</small></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu" aria-controls="menu" aria-expanded="false" aria-label="Открыть меню"><span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="menu"><ul class="navbar-nav ms-auto gap-lg-2"><li class="nav-item"><a class="nav-link active" href="index.html" aria-current="page">Главная</a></li><li class="nav-item"><a class="nav-link" href="catalog.html">Каталог</a></li><li class="nav-item"><a class="nav-link" href="about.html">О нас</a></li><li class="nav-item"><a class="nav-link" href="contacts.html">Контакты</a></li></ul></div>
+  </div>
+</nav>
+</header>
+<main>
 
-      <nav class="site-nav" aria-label="Основная навигация">
-        <ul class="site-nav__list">
-          <li class="site-nav__item"><a class="site-nav__link site-nav__link--active" href="index.html">Главная</a></li>
-          <li class="site-nav__item"><a class="site-nav__link" href="catalog.html">Каталог</a></li>
-          <li class="site-nav__item"><a class="site-nav__link" href="category.html">Категории</a></li>
-          <li class="site-nav__item"><a class="site-nav__link" href="about.html">О нас</a></li>
-          <li class="site-nav__item"><a class="site-nav__link" href="delivery.html">Доставка</a></li>
-          <li class="site-nav__item"><a class="site-nav__link" href="faq.html">Вопросы</a></li>
-          <li class="site-nav__item"><a class="site-nav__link" href="order.html">Заявка</a></li>
-          <li class="site-nav__item"><a class="site-nav__link" href="contacts.html">Контакты</a></li>
-        </ul>
-      </nav>
+<section class="hero">
+  <img class="hero__img" src="images/ferrari-sf90.png" alt="Красный Ferrari SF90 Stradale" fetchpriority="high">
+  <div class="container">
+    <p class="text-uppercase text-danger fw-bold" style="letter-spacing:.3em">Салон суперкаров</p>
+    <h1>Скорость, которую <span class="text-gradient">можно купить</span></h1>
+    <p class="lead my-4">Ferrari, Lamborghini, McLaren, Porsche и Pagani — проверенные автомобили с гарантией и доставкой по России.</p>
+    <div class="d-flex flex-wrap gap-3"><a class="btn btn-red btn-lg" href="catalog.html">Смотреть каталог</a><a class="btn btn-outline-light btn-lg" href="contacts.html">Связаться с нами</a></div>
+  </div>
+</section>
+<section class="container"><div class="row row-cols-2 row-cols-md-4 g-0 border-bottom border-secondary-subtle">
+  <div class="col stat"><div class="stat__num" data-count="9">0</div><div class="text-secondary">моделей в каталоге</div></div>
+  <div class="col stat"><div class="stat__num" data-count="450" data-suffix="+">0</div><div class="text-secondary">довольных клиентов</div></div>
+  <div class="col stat"><div class="stat__num" data-count="24" data-suffix=" мес.">0</div><div class="text-secondary">гарантия</div></div>
+  <div class="col stat"><div class="stat__num" data-count="12" data-suffix=" лет">0</div><div class="text-secondary">на рынке</div></div>
+</div></section>
+
+<section class="section"><div class="container">
+  <h2 class="section__title text-center">Почему выбирают нас</h2>
+  <div class="row g-4">
+    <div class="col-sm-6 col-lg-3 reveal"><div class="feature"><i class="bi bi-shield-check"></i><h3 class="h5 mt-3">Проверка и гарантия</h3><p class="text-secondary mb-0">Каждый автомобиль проходит 150-точечную диагностику. Гарантия до 24 месяцев.</p></div></div>
+    <div class="col-sm-6 col-lg-3 reveal"><div class="feature"><i class="bi bi-truck"></i><h3 class="h5 mt-3">Закрытая доставка</h3><p class="text-secondary mb-0">Привезём в автовозе-крытом контейнере в любой город России.</p></div></div>
+    <div class="col-sm-6 col-lg-3 reveal"><div class="feature"><i class="bi bi-cash-coin"></i><h3 class="h5 mt-3">Кредит и trade-in</h3><p class="text-secondary mb-0">Одобрение за 1 день, лизинг для компаний, выкуп вашего авто.</p></div></div>
+    <div class="col-sm-6 col-lg-3 reveal"><div class="feature"><i class="bi bi-headset"></i><h3 class="h5 mt-3">Личный менеджер</h3><p class="text-secondary mb-0">Один специалист ведёт сделку от выбора до выдачи ключей.</p></div></div>
+  </div>
+</div></section>
+
+<section class="section pt-0"><div class="container">
+  <div class="d-flex justify-content-between align-items-end flex-wrap gap-2"><h2 class="section__title">Популярные автомобили</h2><a class="btn btn-outline-light mb-4" href="catalog.html">Весь каталог <i class="bi bi-arrow-right"></i></a></div>
+  <div class="row g-4" id="popular"></div>
+</div></section>
+
+<section class="section pt-0"><div class="container">
+  <h2 class="section__title text-center">Как купить</h2>
+  <div class="row g-4">
+    <div class="col-md-4 reveal"><div class="step"><div class="step__num">01</div><h3 class="h5">Выберите авто</h3><p class="text-secondary mb-0">Изучите характеристики и отзывы в каталоге.</p></div></div>
+    <div class="col-md-4 reveal"><div class="step"><div class="step__num">02</div><h3 class="h5">Оставьте заявку</h3><p class="text-secondary mb-0">Менеджер свяжется с вами в течение 15 минут.</p></div></div>
+    <div class="col-md-4 reveal"><div class="step"><div class="step__num">03</div><h3 class="h5">Заберите ключи</h3><p class="text-secondary mb-0">Оформим документы и доставим или выдадим в салоне.</p></div></div>
+  </div>
+</div></section>
+
+<section class="section pt-0"><div class="container">
+  <div class="d-flex justify-content-between align-items-end flex-wrap gap-2"><h2 class="section__title">Отзывы покупателей</h2><a class="btn btn-outline-light mb-4" href="reviews.html">Все отзывы / оставить свой</a></div>
+  <div class="row g-4" id="home-reviews"></div>
+</div></section>
+
+<section class="container"><div class="cta text-center text-md-start"><div class="row align-items-center"><div class="col-md-8"><h2 class="fw-bold">Не нашли свою мечту?</h2><p class="mb-md-0">Подберём и привезём любой суперкар под заказ.</p></div><div class="col-md-4 text-md-end"><a class="btn btn-light btn-lg" href="contacts.html">Оставить запрос</a></div></div></div></section>
+</main>
+<footer class="footer">
+<div class="container">
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <a class="navbar-brand text-white text-decoration-none fs-4" href="index.html"><span style="color:var(--w-red)">WEETY</span> SUPERCARS</a>
+      <p class="text-secondary mt-3 pe-lg-5">Премиальный салон суперкаров: Ferrari, Lamborghini, McLaren, Porsche и другие. Подбор, проверка, оформление и доставка по всей России.</p>
     </div>
-  </header>
-
-  <main class="page">
-    <section class="hero">
-      <h1 class="hero__title">Суперкары для тех, кто любит скорость</h1>
-      <p class="hero__text">
-        Каталог избранных суперкаров Ferrari, Lamborghini и McLaren. Выберите
-        модель, изучите характеристики, прочитайте отзывы и оставьте заявку.
-      </p>
-      <a class="button button--primary" href="#popular">Перейти к автомобилям</a>
-    </section>
-
-    <section class="section" id="about">
-      <h2 class="section__title">О проекте</h2>
-      <p>
-        В рамках проекта разработан многостраничный сайт магазина суперкаров
-        на HTML, CSS и JavaScript: семантическая разметка, Flexbox, Grid, БЭМ.
-      </p>
-    </section>
-
-    <section class="section" id="advantages">
-      <h2 class="section__title">Преимущества магазина</h2>
-      <ul class="advantages-list">
-        <li class="advantages-list__item">подробные характеристики каждого автомобиля;</li>
-        <li class="advantages-list__item">отзывы покупателей и средняя оценка;</li>
-        <li class="advantages-list__item">удобные фильтры и категории;</li>
-        <li class="advantages-list__item">быстрая заявка прямо с главной страницы.</li>
+    <div class="col-6 col-lg-3">
+      <h2>Навигация</h2>
+      <nav aria-label="Навигация в подвале"><ul class="list-unstyled">
+        <li><a href="index.html">Главная</a></li><li><a href="catalog.html">Каталог</a></li><li><a href="about.html">О нас</a></li><li><a href="reviews.html">Отзывы</a></li>
+      </ul></nav>
+    </div>
+    <div class="col-12 col-lg-4">
+      <h2>Контакты</h2>
+      <ul class="list-unstyled contacts">
+        <li><i class="bi bi-geo-alt-fill"></i><span>г. Москва, Пресненская наб., 12</span></li>
+        <li><i class="bi bi-telephone-fill"></i><a href="tel:+74951234567">+7 (495) 123-45-67</a></li>
+        <li><i class="bi bi-clock-fill"></i><span>Ежедневно, 09:00–21:00</span></li>
+        <li><i class="bi bi-envelope-fill"></i><a href="mailto:info@weety-cars.ru">info@weety-cars.ru</a></li>
       </ul>
-    </section>
-
-    <section class="section" id="categories">
-      <h2 class="section__title">Категории</h2>
-      <div class="categories-grid" data-categories></div>
-    </section>
-
-    <section class="section" id="popular">
-      <h2 class="section__title">Популярные автомобили</h2>
-      <div class="products-grid" data-products data-order></div>
-    </section>
-
-    <section class="section" id="reviews">
-      <h2 class="section__title">Отзывы покупателей</h2>
-      <div class="reviews__list" id="home-reviews"></div>
-    </section>
-
-    <section class="section" id="faq">
-      <h2 class="section__title">Частые вопросы</h2>
-
-      <div class="faq">
-        <details class="faq__item" name="faq">
-          <summary class="faq__question">Как оформить заявку?</summary>
-          <p class="faq__answer">Нажмите «Заказать» у автомобиля или откройте страницу «Заявка» и заполните форму.</p>
-        </details>
-
-        <details class="faq__item" name="faq">
-          <summary class="faq__question">Как быстро вам ответят?</summary>
-          <p class="faq__answer">Это учебный проект, поэтому заявки никуда не отправляются.</p>
-        </details>
-
-        <details class="faq__item" name="faq">
-          <summary class="faq__question">Какая гарантия на автомобили?</summary>
-          <p class="faq__answer">От 24 до 36 месяцев в зависимости от модели. Точный срок указан в характеристиках.</p>
-        </details>
-
-        <details class="faq__item" name="faq">
-          <summary class="faq__question">Можно ли оплатить автомобиль в лизинг?</summary>
-          <p class="faq__answer">Да, остаток суммы можно оплатить через лизинг. Подробности — на странице «Доставка».</p>
-        </details>
-      </div>
-
-      <p><a href="faq.html">Все вопросы и ответы</a></p>
-    </section>
-
-    <aside class="aside-info">
-      <h2 class="aside-info__title">Информация для студентов</h2>
-      <p class="aside-info__text">
-        На следующих этапах проект будет расширяться: появятся
-        CSS-фреймворки, адаптивная версия и JavaScript-интерактивность.
-      </p>
-    </aside>
-  </main>
-
-  <footer class="site-footer" id="contacts">
-    <div class="site-footer__inner">
-      <p class="site-footer__text">&copy; 2026 Учебный проект. Все права защищены.</p>
-      <p class="site-footer__text">Дисциплина: Фронтенд и бэкенд разработка</p>
     </div>
-  </footer>
-
-  <dialog class="order-dialog" id="order-dialog" aria-labelledby="order-dialog-title">
-    <div class="order-dialog__header">
-      <h2 class="order-dialog__title" id="order-dialog-title">Оформление заявки</h2>
-      <button class="order-dialog__close" type="button" data-close-dialog aria-label="Закрыть окно">&times;</button>
-    </div>
-
-    <div class="order-dialog__product" id="dialog-product" hidden>
-      <img class="order-dialog__thumb" id="dialog-product-img" src="" alt="" width="96" height="60">
-      <div>
-        <p class="order-dialog__product-name" id="dialog-product-name"></p>
-        <p class="order-dialog__product-price" id="dialog-product-price"></p>
-      </div>
-    </div>
-
-    <form class="order-form order-form--in-dialog" id="order-form" action="#" method="post" novalidate>
-      <input id="selected-product" name="selected-product" type="hidden">
-
-      <div class="order-form__field">
-        <label class="order-form__label" for="order-name">Имя</label>
-        <input class="order-form__input" id="order-name" name="name" type="text"
-               placeholder="Введите ваше имя" minlength="2" autocomplete="given-name" required>
-      </div>
-
-      <div class="order-form__field">
-        <label class="order-form__label" for="order-email">E-mail</label>
-        <input class="order-form__input" id="order-email" name="email" type="email"
-               placeholder="example@mail.ru" autocomplete="email" required>
-      </div>
-
-      <div class="order-form__field">
-        <label class="order-form__label" for="order-phone">Телефон</label>
-        <input class="order-form__input" id="order-phone" name="phone" type="tel" inputmode="tel"
-               placeholder="+7 (900) 000-00-00"
-               pattern="^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$" required>
-        <small class="order-form__hint">Формат: +7 (900) 000-00-00</small>
-      </div>
-
-      <div class="order-form__field">
-        <label class="order-form__label" for="order-date">Дата связи</label>
-        <input class="order-form__input" id="order-date" name="date" type="date">
-      </div>
-
-      <div class="order-form__field">
-        <label class="order-form__label" for="order-topic">Тема заявки</label>
-        <select class="order-form__select" id="order-topic" name="topic" required>
-          <option value="">Выберите тему</option>
-          <option value="product">Заказ товара</option>
-          <option value="consultation">Консультация</option>
-          <option value="delivery">Доставка</option>
-        </select>
-      </div>
-
-      <div class="order-form__field">
-        <label class="order-form__label" for="order-comment">Комментарий</label>
-        <textarea class="order-form__textarea" id="order-comment" name="comment" rows="4"
-                  placeholder="Укажите дополнительную информацию"></textarea>
-      </div>
-
-      <div class="order-form__field">
-        <label class="order-form__label">
-          <input class="order-form__checkbox" id="order-agreement" name="agreement" type="checkbox" required>
-          Я согласен на обработку данных
-        </label>
-      </div>
-
-      <div class="order-form__actions order-form__actions--sticky">
-        <button class="button button--secondary" type="button" data-close-dialog>Закрыть</button>
-        <button class="button button--primary" type="submit">Отправить заявку</button>
-      </div>
-    </form>
-  </dialog>
-
-  <p class="success-message" id="success-message" hidden>
-    Форма успешно отправлена!
-  </p>
-
-  <a class="to-top" href="#top" aria-label="Наверх" title="Наверх"></a>
+  </div>
+  <hr class="border-secondary mt-4">
+  <p class="text-secondary small text-center mb-0">© 2026 WEETY Supercars. Учебный проект.</p>
+</div>
+</footer>
 </body>
 </html>

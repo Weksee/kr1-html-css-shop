@@ -1,624 +1,410 @@
 // ============================================================
-// main.js — общее поведение сайта.
-// Подключается на всех страницах ПОСЛЕ products.js (там данные).
+// main.js — логика сайта WEETY Supercars.
+// Подключается через defer ПОСЛЕ data.js (там PRODUCTS, CATEGORIES, BADGES).
 // ============================================================
 
-// ===== 1. Вспомогательные функции =====
+// ===== 1. Функции (строки, числа, логика) =====
 
-// Экранирование: чтобы текст пользователя не стал HTML-кодом
-function escapeHtml(text) {
-  const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39' };
-  return String(text).replace(/[&<>"']/g, (char) => map[char]);
-}
-
-// 65000000 -> «65 000 000 руб.»
+// Форматирование цены: 65000000 -> «65 000 000 ₽»
 function formatPrice(value) {
-  return new Intl.NumberFormat('ru-RU').format(value) + ' руб.';
+  return new Intl.NumberFormat('ru-RU').format(value) + ' ₽';
 }
 
-function findProduct(id) {
-  return PRODUCTS.find((product) => product.id === id);
+// Скидка в процентах: арифметические операторы
+function calcDiscount(price, oldPrice) {
+  if (!oldPrice || oldPrice <= price) return 0;
+  return Math.round((oldPrice - price) / oldPrice * 100);
 }
 
-function starsText(rating) {
-  return '★'.repeat(rating) + '☆'.repeat(5 - rating);
+// Значение характеристики из таблицы specs
+function getSpec(product, key) {
+  const row = product.specs.find((item) => item[0] === key);
+  return row ? row[1] : '—';
 }
 
-// Склонение: 1 отзыв, 2 отзыва, 5 отзывов
+// Статус товара: логические операторы и сравнение
+function getStatus(product) {
+  const inStock = getSpec(product, 'Наличие') === 'В наличии';
+  const hasDiscount = calcDiscount(product.price, product.oldPrice) > 0;
+  if (inStock && hasDiscount) return 'В наличии, действует скидка';
+  if (inStock) return 'В наличии';
+  return 'Под заказ';
+}
+
+// Краткое описание: шаблонная строка
+function shortDescription(product) {
+  const power = getSpec(product, 'Мощность');
+  const acc = getSpec(product, 'Разгон 0–100 км/ч');
+  return `${product.name} — ${power}, разгон 0–100 за ${acc}. ${getStatus(product)}.`;
+}
+
+function findProduct(id) { return PRODUCTS.find((p) => p.id === id); }
+function stars(n) { return '★'.repeat(n) + '☆'.repeat(5 - n); }
 function plural(n, one, few, many) {
-  const mod10 = n % 10;
-  const mod100 = n % 100;
-  if (mod10 === 1 && mod100 !== 11) return one;
-  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return few;
+  const a = n % 10, b = n % 100;
+  if (a === 1 && b !== 11) return one;
+  if (a >= 2 && a <= 4 && (b < 10 || b >= 20)) return few;
   return many;
 }
+function parseDate(str) { const [d, m, y] = str.split('.').map(Number); return new Date(y, m - 1, d).getTime(); }
 
-// ===== 2. Высота шапки (нужна для sticky-фильтра) =====
+// Безопасное создание элементов: текст только через textContent
+function el(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+function escapeHtml(text) {
+  return String(text).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
 
-const siteHeader = document.querySelector('.site-header');
+// ===== 2. Вывод результата функций в консоль =====
+function consoleDemo() {
+  const p = PRODUCTS[1];
+  console.log('Название:', p.name, '| тип:', typeof p.name);
+  console.log('Цена:', formatPrice(p.price), '| тип:', typeof p.price);
+  console.log('Скидка, %:', calcDiscount(p.price, p.oldPrice));
+  console.log('Статус:', getStatus(p));
+  console.log('Описание:', shortDescription(p));
+  console.log('Цена > 40 млн и есть скидка?', p.price > 40000000 && Boolean(p.oldPrice));
+}
 
-function updateHeaderHeight() {
-  if (siteHeader) {
-    document.documentElement.style.setProperty('--header-height', siteHeader.offsetHeight + 'px');
+// ===== 3. Отзывы: данные из data.js + свои из localStorage =====
+const REVIEWS_KEY = 'weety:reviews';
+function loadMyReviews() {
+  try { return JSON.parse(localStorage.getItem(REVIEWS_KEY)) || []; } catch (e) { return []; }
+}
+function saveMyReviews(list) {
+  try { localStorage.setItem(REVIEWS_KEY, JSON.stringify(list)); } catch (e) { /* хранилище недоступно */ }
+}
+function getAllReviews(productId) {
+  const base = [];
+  PRODUCTS.forEach((p) => p.reviews.forEach((r) => base.push({ ...r, productId: p.id, mine: false })));
+  const all = base.concat(loadMyReviews().map((r) => ({ ...r, mine: true })));
+  const list = productId ? all.filter((r) => r.productId === productId) : all;
+  return list;
+}
+function addReview(review) {
+  const list = loadMyReviews();
+  list.push({ ...review, id: Date.now(), date: new Date().toLocaleDateString('ru-RU') });
+  saveMyReviews(list);
+}
+function deleteReview(id) { saveMyReviews(loadMyReviews().filter((r) => r.id !== id)); }
+
+function reviewNode(r, onDelete) {
+  const col = el('div', 'col-md-6 col-lg-4');
+  const box = el('article', 'review' + (r.mine ? ' review--mine' : ''));
+  const head = el('div', 'd-flex align-items-center gap-3 mb-3');
+  head.append(el('div', 'avatar', r.name.trim().charAt(0).toUpperCase()));
+  const who = el('div');
+  who.append(el('div', 'fw-semibold', r.name));
+  who.append(el('small', 'text-secondary', r.date + (r.mine ? ' · ваш отзыв' : '')));
+  head.append(who);
+  box.append(head);
+  const rating = el('div', 'stars mb-2', stars(r.rating));
+  rating.setAttribute('aria-label', `Оценка ${r.rating} из 5`);
+  box.append(rating);
+  const prod = findProduct(r.productId);
+  if (prod) {
+    const link = el('a', 'small d-block mb-2', prod.name);
+    link.href = 'product.html?id=' + prod.id;
+    box.append(link);
   }
-}
-
-updateHeaderHeight();
-window.addEventListener('resize', updateHeaderHeight);
-
-// ===== 3. Кнопка «Наверх» =====
-
-const toTopButton = document.querySelector('.to-top');
-
-if (toTopButton) {
-  const toggleToTop = () => {
-    toTopButton.classList.toggle('to-top--visible', window.scrollY > 300);
-  };
-
-  window.addEventListener('scroll', toggleToTop, { passive: true });
-  toggleToTop();
-
-  toTopButton.addEventListener('click', (event) => {
-    event.preventDefault();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
-}
-
-// ===== 4. Проверка форм (заявка и отзыв) =====
-
-function getErrorMessage(field) {
-  const state = field.validity;
-
-  if (state.valueMissing) {
-    return field.type === 'checkbox' ? 'Необходимо ваше согласие' : 'Заполните это поле';
+  box.append(el('p', 'mb-0', r.text));
+  if (r.mine && onDelete) {
+    const del = el('button', 'btn btn-sm btn-outline-danger mt-3', 'Удалить');
+    del.type = 'button';
+    del.addEventListener('click', () => onDelete(r.id));
+    box.append(del);
   }
-  if (state.typeMismatch) return 'Введите корректный e-mail';
-  if (state.tooShort) return 'Минимум символов: ' + field.minLength;
-  if (state.patternMismatch) return 'Формат: +7 (900) 000-00-00';
-  return field.validationMessage;
+  col.append(box);
+  return col;
 }
 
-// Показать (или убрать, если message пустое) ошибку под полем
-function setFieldError(field, message) {
-  const wrapper = field.closest('.order-form__field');
-  if (!wrapper) return;
-
-  let error = wrapper.querySelector('.order-form__error');
-
-  if (!message) {
-    field.removeAttribute('aria-invalid');
-    if (error) error.remove();
-    return;
-  }
-
-  field.setAttribute('aria-invalid', 'true');
-
-  if (!error) {
-    error = document.createElement('small');
-    error.className = 'order-form__error';
-    error.setAttribute('role', 'alert');
-    wrapper.append(error);
-  }
-  error.textContent = message;
-}
-
-function clearErrors(form) {
-  Array.from(form.elements).forEach((element) => setFieldError(element, ''));
-}
-
-// true — всё верно; иначе показывает ошибки и ставит курсор в первое поле с ошибкой
-function validateForm(form) {
-  let firstInvalid = null;
-
-  Array.from(form.elements).forEach((element) => {
-    if (!element.willValidate) return;
-
-    if (element.type === 'text' || element.tagName === 'TEXTAREA') {
-      element.value = element.value.trim();
-    }
-
-    if (element.checkValidity()) {
-      setFieldError(element, '');
-    } else {
-      setFieldError(element, getErrorMessage(element));
-      firstInvalid = firstInvalid || element;
-    }
-  });
-
-  if (firstInvalid) firstInvalid.focus();
-  return !firstInvalid;
-}
-
-// Ошибка исчезает, как только пользователь исправил поле
-['input', 'change'].forEach((eventName) => {
-  document.addEventListener(eventName, (event) => {
-    const field = event.target;
-    if (field.getAttribute && field.getAttribute('aria-invalid') === 'true' && field.checkValidity()) {
-      setFieldError(field, '');
-    }
-  });
-});
-
-// Маска телефона: +7 (900) 000-00-00
-function formatPhone(value) {
-  let digits = value.replace(/\D/g, '');
-  if (digits.startsWith('7') || digits.startsWith('8')) digits = digits.slice(1);
-  digits = digits.slice(0, 10);
-
-  if (!digits) return '';
-
-  let result = '+7 (' + digits.slice(0, 3);
-  if (digits.length > 3) result += ') ' + digits.slice(3, 6);
-  if (digits.length > 6) result += '-' + digits.slice(6, 8);
-  if (digits.length > 8) result += '-' + digits.slice(8, 10);
-  return result;
-}
-
-document.addEventListener('input', (event) => {
-  if (event.target.matches('input[type="tel"]')) {
-    event.target.value = formatPhone(event.target.value);
-  }
-});
-
-// ===== 5. Уведомление об успехе =====
-
-const successMessage = document.getElementById('success-message');
-let messageTimer;
-
-function showSuccess(text) {
-  if (!successMessage) return;
-  successMessage.textContent = text;
-  successMessage.hidden = false;
-  clearTimeout(messageTimer);
-  messageTimer = setTimeout(() => {
-    successMessage.hidden = true;
-  }, 4000);
-}
-
-// ===== 6. Модальное окно заявки (index.html) и форма заявки =====
-
-const orderDialog = document.getElementById('order-dialog');
-const orderForm = document.getElementById('order-form');
-const selectedProductInput = document.getElementById('selected-product');
-const dialogProduct = document.getElementById('dialog-product');
-
-// Нельзя выбрать дату связи в прошлом
-const dateInput = document.getElementById('order-date');
-if (dateInput) {
-  const today = new Date();
-  today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
-  dateInput.min = today.toISOString().slice(0, 10);
-}
-
-function openOrderDialog(productId) {
-  const product = findProduct(productId);
-
-  if (selectedProductInput) {
-    selectedProductInput.value = product ? product.name : '';
-  }
-
-  // Показываем в окне, какой автомобиль заказывает пользователь
-  if (dialogProduct && product) {
-    document.getElementById('dialog-product-img').src = product.image;
-    document.getElementById('dialog-product-img').alt = product.name;
-    document.getElementById('dialog-product-name').textContent = product.name;
-    document.getElementById('dialog-product-price').textContent = formatPrice(product.price);
-    dialogProduct.hidden = false;
-  }
-
-  // Тема заявки выбирается сама
-  const topic = document.getElementById('order-topic');
-  if (topic) topic.value = 'product';
-
-  orderDialog.showModal();
-  document.getElementById('order-name').focus();
-}
-
-// Кнопки «Заказать» создаются скриптом, поэтому слушаем клики на всём документе
-document.addEventListener('click', (event) => {
-  const button = event.target.closest('[data-product]');
-  if (button && orderDialog) {
-    openOrderDialog(button.dataset.product);
-  }
-});
-
-if (orderDialog) {
-  // Закрытие: кнопка «Закрыть», крестик (data-close-dialog) или клик по тёмному фону
-  orderDialog.addEventListener('click', (event) => {
-    const isCloseButton = event.target.closest('[data-close-dialog]');
-    const isBackdrop = event.target === orderDialog;
-
-    if (isCloseButton || isBackdrop) {
-      orderDialog.close();
-    }
-  });
-
-  // При любом закрытии (в том числе клавишей Esc) очищаем окно
-  orderDialog.addEventListener('close', () => {
-    if (orderForm) {
-      orderForm.reset();
-      clearErrors(orderForm);
-    }
-    if (selectedProductInput) selectedProductInput.value = '';
-    if (dialogProduct) dialogProduct.hidden = true;
-  });
-}
-
-if (orderForm) {
-  orderForm.addEventListener('submit', (event) => {
-    // Настоящую отправку отменяем (backend пока не подключён)
-    event.preventDefault();
-
-    if (!validateForm(orderForm)) return;
-
-    orderForm.reset();
-    if (orderDialog) orderDialog.close();
-    showSuccess('Заявка отправлена! Мы свяжемся с вами в ближайшее время.');
-  });
-}
-
-// order.html?product=sf90 — товар выбирается в списке автоматически
-const productSelect = document.getElementById('order-product');
-if (productSelect) {
-  const productId = new URLSearchParams(location.search).get('product');
-  if (productId && findProduct(productId)) {
-    productSelect.value = productId;
-  }
-}
-
-// ===== 7. Карточки товаров, категории, хлебные крошки =====
-
-function renderCard(product, withOrderButton) {
-  const badge = BADGES[product.badge];
-  const oldPrice = product.oldPrice
-    ? `<span class="product-card__old-price">${formatPrice(product.oldPrice)}</span> `
-    : '';
-
+// ===== 4. Карточки автомобилей =====
+function cardHtml(p) {
+  const b = BADGES[p.badge];
+  const disc = calcDiscount(p.price, p.oldPrice);
+  const badgeClass = p.badge === 'discount' ? 'bg-danger' : p.badge === 'new' ? 'bg-success' : 'bg-warning text-dark';
+  const badgeText = disc ? `−${disc}%` : b.text;
   return `
-    <article class="product-card ${badge.card}">
-      <a class="product-card__media" href="product.html?id=${product.id}">
-        <img class="product-card__image" src="${product.image}" alt="${product.name}" loading="lazy">
+  <div class="col-sm-6 col-lg-4 reveal">
+    <article class="car-card">
+      <a class="car-card__media" href="product.html?id=${p.id}" aria-label="Подробнее: ${escapeHtml(p.name)}">
+        <span class="badge ${badgeClass} car-card__badge">${badgeText}</span>
+        <img src="${p.image}" alt="${escapeHtml(p.name)} — вид спереди" width="678" height="452" loading="lazy">
       </a>
-      <span class="product-card__badge ${badge.badge}">${badge.text}</span>
-      <h3 class="product-card__title">${product.name}</h3>
-      <p class="product-card__description">${product.short}</p>
-      <p class="product-card__price">${oldPrice}${formatPrice(product.price)}</p>
-      <div class="product-card__actions">
-        <a class="button ${withOrderButton ? 'button--secondary' : 'button--primary'}" href="product.html?id=${product.id}">Подробнее</a>
-        ${withOrderButton ? `<button class="button button--primary" type="button" data-product="${product.id}">Заказать</button>` : ''}
-      </div>
-    </article>`;
-}
-
-function fillGrid(container, list, withOrderButton) {
-  container.innerHTML = list.map((product) => renderCard(product, withOrderButton)).join('');
-}
-
-function renderCategoryCards(container, exceptKey) {
-  container.innerHTML = Object.entries(CATEGORIES)
-    .filter(([key]) => key !== exceptKey)
-    .map(([key, category]) => {
-      const count = PRODUCTS.filter((product) => product.category === key).length;
-      return `
-        <a class="category-card" href="category.html?cat=${key}">
-          <h3 class="category-card__title">${category.title}</h3>
-          <p class="category-card__text">${category.text}</p>
-          <span class="category-card__count">Моделей: ${count}</span>
-        </a>`;
-    })
-    .join('');
-}
-
-function setBreadcrumbs(items) {
-  const nav = document.getElementById('breadcrumbs');
-  if (!nav) return;
-
-  nav.innerHTML = items
-    .map((item) => item.href
-      ? `<a class="breadcrumbs__link" href="${item.href}">${item.text}</a>`
-      : `<span class="breadcrumbs__current">${item.text}</span>`)
-    .join('');
-}
-
-// Блоки с атрибутами: data-products (товары), data-order (с кнопкой «Заказать»), data-categories
-document.querySelectorAll('[data-products]').forEach((container) => {
-  fillGrid(container, PRODUCTS, container.hasAttribute('data-order'));
-});
-
-document.querySelectorAll('[data-categories]').forEach((container) => {
-  renderCategoryCards(container);
-});
-
-// ===== 8. Отзывы =====
-
-function reviewHtml(review, product) {
-  return `
-    <article class="review">
-      <div class="review__head">
-        <strong class="review__author">${escapeHtml(review.name)}</strong>
-        <span class="review__stars" role="img" aria-label="Оценка ${review.rating} из 5">${starsText(review.rating)}</span>
-        <time class="review__date">${review.date}</time>
-      </div>
-      <p class="review__text">${escapeHtml(review.text)}</p>
-      ${product ? `<a class="review__product" href="product.html?id=${product.id}">${product.name}</a>` : ''}
-    </article>`;
-}
-
-// Отзывы на главной: по одному на каждый автомобиль
-const homeReviews = document.getElementById('home-reviews');
-if (homeReviews) {
-  homeReviews.innerHTML = PRODUCTS.map((product) => reviewHtml(product.reviews[0], product)).join('');
-}
-
-// Новые отзывы хранятся в браузере (localStorage), пока нет backend
-function loadReviews(productId) {
-  try {
-    return JSON.parse(localStorage.getItem('reviews:' + productId)) || [];
-  } catch {
-    return [];
-  }
-}
-
-function saveReviews(productId, list) {
-  try {
-    localStorage.setItem('reviews:' + productId, JSON.stringify(list));
-  } catch {
-    // хранилище недоступно — отзыв просто не сохранится после обновления
-  }
-}
-
-// ===== 9. Страница
-
-function initCatalog() {
-  const grid = document.getElementById('catalog-grid');
-  const form = document.getElementById('filters-form');
-  if (!grid || !form) return;
-
-  const count = document.getElementById('catalog-count');
-  const empty = document.getElementById('catalog-empty');
-
-  function applyFilters() {
-    const categories = Array.from(form.querySelectorAll('input[name="category"]:checked'))
-      .map((input) => input.value);
-    const priceFrom = (parseFloat(form.elements['price-from'].value) || 0) * 1000000;
-    const priceTo = (parseFloat(form.elements['price-to'].value) || Infinity) * 1000000;
-    const sort = form.elements['sort'].value;
-
-    const list = PRODUCTS.filter((product) =>
-      (categories.length === 0 || categories.includes(product.category)) &&
-      product.price >= priceFrom &&
-      product.price <= priceTo
-    );
-
-    if (sort === 'price-asc') list.sort((a, b) => a.price - b.price);
-    if (sort === 'price-desc') list.sort((a, b) => b.price - a.price);
-
-    fillGrid(grid, list, false);
-    count.textContent = 'Найдено автомобилей: ' + list.length;
-    empty.hidden = list.length > 0;
-  }
-
-  form.addEventListener('input', applyFilters);
-  form.addEventListener('change', applyFilters);
-  form.addEventListener('submit', (event) => {
-    event.preventDefault();
-    applyFilters();
-  });
-  form.addEventListener('reset', () => setTimeout(applyFilters, 0));
-
-  applyFilters();
-}
-
-// ===== 10. Страница категории: category.html?cat=italy =====
-
-function initCategory() {
-  const root = document.getElementById('category-root');
-  if (!root) return;
-
-  const key = new URLSearchParams(location.search).get('cat');
-  const category = CATEGORIES[key];
-
-  // Без параметра (или с неверным) показываем список всех категорий
-  if (!category) {
-    document.title = 'Категории — SuperCars';
-    setBreadcrumbs([{ text: 'Главная', href: 'index.html' }, { text: 'Категории' }]);
-    root.innerHTML = `
-      <section class="section">
-        <h1 class="section__title">Категории</h1>
-        <p>Выберите категорию автомобилей.</p>
-        <div class="categories-grid" data-categories></div>
-      </section>`;
-    renderCategoryCards(root.querySelector('[data-categories]'));
-    return;
-  }
-
-  const list = PRODUCTS.filter((product) => product.category === key);
-
-  document.title = category.title + ' — SuperCars';
-  setBreadcrumbs([
-    { text: 'Главная', href: 'index.html' },
-    { text: 'Категории', href: 'category.html' },
-    { text: category.title }
-  ]);
-
-  root.innerHTML = `
-    <section class="section">
-      <h1 class="section__title">${category.title}</h1>
-      <p>${category.text}</p>
-      <p class="section__note">Моделей в категории: ${list.length}</p>
-      <div class="products-grid" id="category-grid"></div>
-    </section>
-    <section class="section">
-      <h2 class="section__title">Другие категории</h2>
-      <div class="categories-grid" id="other-categories"></div>
-    </section>`;
-
-  fillGrid(document.getElementById('category-grid'), list, false);
-  renderCategoryCards(document.getElementById('other-categories'), key);
-}
-
-// ===== 11. Страница товара: product.html?id=sf90 =====
-
-function initProduct() {
-  const root = document.getElementById('product-root');
-  if (!root) return;
-
-  const id = new URLSearchParams(location.search).get('id');
-  const product = findProduct(id) || PRODUCTS[0];
-  const badge = BADGES[product.badge];
-  const category = CATEGORIES[product.category];
-  const stock = product.specs.find((row) => row[0] === 'Наличие')[1];
-  const related = PRODUCTS.filter((item) => item.id !== product.id);
-
-  document.title = product.name + ' — SuperCars';
-  const metaDescription = document.querySelector('meta[name="description"]');
-  if (metaDescription) metaDescription.content = product.short;
-
-  setBreadcrumbs([
-    { text: 'Главная', href: 'index.html' },
-    { text: 'Каталог', href: 'catalog.html' },
-    { text: category.title, href: 'category.html?cat=' + product.category },
-    { text: product.name }
-  ]);
-
-  root.innerHTML = `
-    <article class="product-page">
-      <div class="product-page__gallery">
-        <img class="product-page__image" src="${product.image}" alt="${product.name}">
-        <span class="product-card__badge ${badge.badge}">${badge.text}</span>
-      </div>
-
-      <div class="product-page__info">
-        <p class="product-page__brand">${category.title}</p>
-        <h1 class="product-page__title">${product.name}</h1>
-        <a class="product-page__rating" id="product-rating" href="#reviews"></a>
-        <p class="product-page__price">
-          ${product.oldPrice ? `<span class="product-card__old-price">${formatPrice(product.oldPrice)}</span>` : ''}
-          ${formatPrice(product.price)}
-        </p>
-        <p class="product-page__stock">Наличие: <strong>${stock}</strong></p>
-        <p>${product.description}</p>
-
-        <ul class="stats">
-          ${product.stats.map(([value, label]) => `
-            <li class="stats__item">
-              <span class="stats__value">${value}</span>
-              <span class="stats__label">${label}</span>
-            </li>`).join('')}
-        </ul>
-
-        <div class="product-page__actions">
-          <a class="button button--primary" href="order.html?product=${product.id}">Оставить заявку</a>
-          <a class="button button--secondary" href="catalog.html">Назад в каталог</a>
+      <div class="car-card__body">
+        <h3 class="h5">${escapeHtml(p.name)}</h3>
+        <p class="text-secondary small flex-grow-1">${escapeHtml(p.short)}</p>
+        <div class="mb-3">
+          <div class="car-card__price">${formatPrice(p.price)}</div>
+          ${p.oldPrice ? `<div class="old-price">${formatPrice(p.oldPrice)}</div>` : ''}
+          <small class="${getSpec(p, 'Наличие') === 'В наличии' ? 'text-success' : 'text-warning'}"><i class="bi bi-circle-fill small"></i> ${getStatus(p)}</small>
+        </div>
+        <div class="d-flex gap-2">
+          <a class="btn btn-outline-light flex-fill" href="product.html?id=${p.id}">Подробнее</a>
+          <button class="btn btn-red flex-fill" type="button" data-order="${p.id}">Купить</button>
         </div>
       </div>
     </article>
+  </div>`;
+}
+function fillCards(container, list) {
+  container.innerHTML = list.map(cardHtml).join('');
+  observeReveal();
+}
 
-    <section class="section">
-      <table class="product-table">
-        <caption class="product-table__caption">Характеристики</caption>
-        <thead>
-          <tr>
-            <th class="product-table__head">Параметр</th>
-            <th class="product-table__head">Значение</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${product.specs.map(([name, value]) => `
-            <tr>
-              <td class="product-table__cell">${name}</td>
-              <td class="product-table__cell">${value}</td>
-            </tr>`).join('')}
-        </tbody>
-      </table>
-    </section>
-
-    <section class="section reviews" id="reviews">
-      <h2 class="section__title">Отзывы покупателей</h2>
-      <p class="reviews__summary" id="reviews-summary"></p>
-      <div class="reviews__list" id="reviews-list"></div>
-
-      <form class="review-form" id="review-form" novalidate>
-        <h3 class="review-form__title">Оставить отзыв</h3>
-
-        <div class="order-form__field">
-          <label class="order-form__label" for="review-name">Ваше имя</label>
-          <input class="order-form__input" id="review-name" name="author" type="text"
-                 minlength="2" maxlength="40" placeholder="Например, Иван" required>
-        </div>
-
-        <div class="order-form__field">
-          <label class="order-form__label" for="review-rating">Оценка</label>
-          <select class="order-form__select" id="review-rating" name="rating" required>
-            <option value="">Выберите оценку</option>
-            <option value="5">5 — отлично</option>
-            <option value="4">4 — хорошо</option>
-            <option value="3">3 — нормально</option>
-            <option value="2">2 — плохо</option>
-            <option value="1">1 — ужасно</option>
-          </select>
-        </div>
-
-        <div class="order-form__field">
-          <label class="order-form__label" for="review-text">Отзыв</label>
-          <textarea class="order-form__textarea" id="review-text" name="text" rows="4"
-                    minlength="10" maxlength="500" placeholder="Расскажите о своих впечатлениях" required></textarea>
-        </div>
-
-        <button class="button button--primary" type="submit">Отправить отзыв</button>
-      </form>
-    </section>
-
-    <section class="section">
-      <h2 class="section__title">Похожие автомобили</h2>
-      <div class="products-grid" id="related-grid"></div>
-    </section>`;
-
-  fillGrid(document.getElementById('related-grid'), related, false);
-
-  // Список отзывов: свои (из localStorage) + стандартные из pro
-
-
-
-
-  function renderReviews() {
-    const all = [...loadReviews(product.id), ...product.reviews];
-    const average = all.reduce((sum, review) => sum + review.rating, 0) / all.length;
-    const averageText = average.toFixed(1).replace('.', ',');
-    const countText = all.length + ' ' + plural(all.length, 'отзыв', 'отзыва', 'отзывов');
-
-    document.getElementById('reviews-summary').innerHTML =
-      `Средняя оценка: <strong>${averageText}</strong> из 5 · ${countText}`;
-    document.getElementById('product-rating').textContent = `★ ${averageText} · ${countText}`;
-    document.getElementById('reviews-list').innerHTML = all.map((review) => reviewHtml(review)).join('');
-  }
-
-  renderReviews();
-
-  const reviewForm = document.getElementById('review-form');
-  reviewForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-
-    if (!validateForm(reviewForm)) return;
-
-    const saved = loadReviews(product.id);
-    saved.unshift({
-      name: reviewForm.elements['author'].value,
-      rating: Number(reviewForm.elements['rating'].value),
-      date: new Date().toLocaleDateString('ru-RU'),
-      text: reviewForm.elements['text'].value
+// ===== 5. Эффекты: появление, счётчики, кнопка «наверх» =====
+let revealObserver;
+function observeReveal() {
+  if (!('IntersectionObserver' in window)) { document.querySelectorAll('.reveal').forEach((n) => n.classList.add('visible')); return; }
+  revealObserver = revealObserver || new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('visible'); revealObserver.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal:not(.visible)').forEach((n) => revealObserver.observe(n));
+}
+function initCounters() {
+  const nodes = document.querySelectorAll('[data-count]');
+  if (!nodes.length) return;
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      const node = e.target, target = Number(node.dataset.count), t0 = performance.now();
+      const tick = (now) => {
+        const k = Math.min((now - t0) / 1400, 1);
+        node.textContent = Math.round(target * k) + (node.dataset.suffix || '');
+        if (k < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+      io.unobserve(node);
     });
-    saveReviews(product.id, saved);
+  }, { threshold: 0.5 });
+  nodes.forEach((n) => io.observe(n));
+}
+function initToTop() {
+  const btn = el('button', 'btn btn-red', '↑');
+  btn.id = 'toTop'; btn.type = 'button'; btn.setAttribute('aria-label', 'Наверх');
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  document.body.append(btn);
+  window.addEventListener('scroll', () => { btn.style.display = window.scrollY > 500 ? 'block' : 'none'; });
+}
+function toast(message) {
+  let wrap = document.getElementById('toasts');
+  if (!wrap) {
+    wrap = el('div', 'toast-container position-fixed top-0 end-0 p-3');
+    wrap.id = 'toasts'; wrap.style.zIndex = 2000; document.body.append(wrap);
+  }
+  const t = el('div', 'toast align-items-center text-bg-success border-0');
+  t.setAttribute('role', 'status');
+  const row = el('div', 'd-flex');
+  row.append(el('div', 'toast-body', message));
+  const x = el('button', 'btn-close btn-close-white me-2 m-auto'); x.type = 'button'; x.setAttribute('data-bs-dismiss', 'toast'); x.setAttribute('aria-label', 'Закрыть');
+  row.append(x); t.append(row); wrap.append(t);
+  const inst = new bootstrap.Toast(t, { delay: 3500 }); inst.show();
+  t.addEventListener('hidden.bs.toast', () => t.remove());
+}
 
-    reviewForm.reset();
-    renderReviews();
-    showSuccess('Спасибо! Ваш отзыв добавлен.');
+// ===== 6. Формы: валидация, маска телефона =====
+function maskPhone(input) {
+  input.addEventListener('input', () => {
+    let d = input.value.replace(/\D/g, '');
+    if (d.startsWith('8') || d.startsWith('7')) d = d.slice(1);
+    d = d.slice(0, 10);
+    let out = '+7';
+    if (d.length) out += ' (' + d.slice(0, 3);
+    if (d.length >= 3) out += ') ' + d.slice(3, 6);
+    if (d.length >= 6) out += '-' + d.slice(6, 8);
+    if (d.length >= 8) out += '-' + d.slice(8, 10);
+    input.value = d.length ? out : '';
+  });
+}
+function bindForm(form, onValid) {
+  form.noValidate = true;
+  form.querySelectorAll('input[type="tel"]').forEach(maskPhone);
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (!form.checkValidity()) { form.classList.add('was-validated'); return; }
+    onValid(new FormData(form));
+    form.reset(); form.classList.remove('was-validated');
   });
 }
 
-initCatalog();
-initCategory();
-initProduct();
+// ===== 7. Модальное окно заказа =====
+let orderModal, orderForm;
+function initOrderModal() {
+  const wrap = document.createElement('div');
+  wrap.innerHTML = `
+  <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+      <div class="modal-header border-secondary"><h2 class="modal-title h5" id="orderTitle">Оформить заявку</h2>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Закрыть"></button></div>
+      <form id="orderForm" novalidate><div class="modal-body">
+        <p class="text-secondary" id="orderCar"></p>
+        <div class="mb-3"><label for="oName" class="form-label">Ваше имя</label>
+          <input class="form-control" id="oName" name="name" required minlength="2" autocomplete="name"><div class="invalid-feedback">Введите имя (минимум 2 символа).</div></div>
+        <div class="mb-3"><label for="oPhone" class="form-label">Телефон</label>
+          <input class="form-control" id="oPhone" name="phone" type="tel" required pattern="\\+7 \\(\\d{3}\\) \\d{3}-\\d{2}-\\d{2}" placeholder="+7 (___) ___-__-__" autocomplete="tel"><div class="invalid-feedback">Введите телефон полностью.</div></div>
+        <div class="mb-3"><label for="oPay" class="form-label">Способ покупки</label>
+          <select class="form-select" id="oPay" name="pay"><option>Наличные</option><option>Кредит</option><option>Лизинг</option><option>Trade-in</option></select></div>
+        <div class="form-check"><input class="form-check-input" type="checkbox" id="oAgree" required><label class="form-check-label" for="oAgree">Согласен на обработку данных</label><div class="invalid-feedback">Необходимо согласие.</div></div>
+      </div><div class="modal-footer border-secondary"><button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Отмена</button><button type="submit" class="btn btn-red">Отправить</button></div></form>
+    </div></div></div>`;
+  document.body.append(wrap.firstElementChild);
+  orderModal = new bootstrap.Modal(document.getElementById('orderModal'));
+  orderForm = document.getElementById('orderForm');
+  let currentId = null;
+  bindForm(orderForm, (data) => {
+    const orders = JSON.parse(localStorage.getItem('weety:orders') || '[]');
+    orders.push({ car: currentId, name: data.get('name'), phone: data.get('phone'), pay: data.get('pay'), date: new Date().toISOString() });
+    try { localStorage.setItem('weety:orders', JSON.stringify(orders)); } catch (e) {}
+    orderModal.hide();
+    toast(`Заявка отправлена, ${data.get('name')}! Менеджер свяжется с вами в течение 15 минут.`);
+  });
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-order]');
+    if (!btn) return;
+    const p = findProduct(btn.dataset.order);
+    currentId = p.id;
+    document.getElementById('orderCar').textContent = `${p.name} — ${formatPrice(p.price)}`;
+    orderModal.show();
+  });
+}
 
+// ===== 8. Форма отзыва =====
+function initReviewForm(form, fixedId, afterAdd) {
+  const select = form.querySelector('select[name="productId"]');
+  if (select) select.append(...PRODUCTS.map((p) => { const o = el('option', '', p.name); o.value = p.id; return o; }));
+  bindForm(form, (data) => {
+    addReview({ productId: fixedId || data.get('productId'), name: data.get('name').trim(), rating: Number(data.get('rating')), text: data.get('text').trim() });
+    toast('Спасибо! Ваш отзыв добавлен.');
+    afterAdd();
+  });
+}
 
+// ===== 9. Страницы =====
+const pages = {
+  home() {
+    const featured = PRODUCTS.filter((p) => p.badge === 'hit' || p.badge === 'discount').slice(0, 6);
+    fillCards(document.getElementById('popular'), featured);
+    const latest = getAllReviews().sort((a, b) => parseDate(b.date) - parseDate(a.date)).slice(0, 3);
+    const box = document.getElementById('home-reviews');
+    latest.forEach((r) => box.append(reviewNode(r)));
+  },
 
+  catalog() {
+    const grid = document.getElementById('grid'), count = document.getElementById('count');
+    const q = document.getElementById('q'), cat = document.getElementById('cat'), sort = document.getElementById('sort'), price = document.getElementById('price'), priceOut = document.getElementById('priceOut'), stock = document.getElementById('stock');
+    const params = new URLSearchParams(location.search);
+    if (params.get('cat')) cat.value = params.get('cat');
+    function apply() {
+      priceOut.textContent = formatPrice(Number(price.value));
+      let list = PRODUCTS.filter((p) =>
+        p.name.toLowerCase().includes(q.value.trim().toLowerCase()) &&
+        (cat.value === 'all' || p.category === cat.value) &&
+        p.price <= Number(price.value) &&
+        (!stock.checked || getSpec(p, 'Наличие') === 'В наличии'));
+      const s = sort.value;
+      if (s === 'asc') list.sort((a, b) => a.price - b.price);
+      if (s === 'desc') list.sort((a, b) => b.price - a.price);
+      if (s === 'name') list.sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+      count.textContent = `Найдено: ${list.length} ${plural(list.length, 'автомобиль', 'автомобиля', 'автомобилей')}`;
+      if (list.length) fillCards(grid, list);
+      else grid.innerHTML = '<div class="col-12 text-center text-secondary py-5">Ничего не найдено. Измените фильтры.</div>';
+    }
+    [q, cat, sort, price, stock].forEach((n) => n.addEventListener('input', apply));
+    document.getElementById('reset').addEventListener('click', () => { q.value = ''; cat.value = 'all'; sort.value = 'default'; price.value = price.max; stock.checked = false; apply(); });
+    apply();
+    // Сравнительная таблица
+    const tbody = document.getElementById('compare');
+    PRODUCTS.forEach((p) => {
+      const tr = document.createElement('tr');
+      const a = el('td'); const link = el('a', '', p.name); link.href = 'product.html?id=' + p.id; a.append(link);
+      tr.append(a, el('td', '', getSpec(p, 'Мощность')), el('td', '', getSpec(p, 'Разгон 0–100 км/ч')), el('td', '', getSpec(p, 'Макс. скорость')), el('td', 'text-nowrap', formatPrice(p.price)));
+      tbody.append(tr);
+    });
+  },
+
+  product() {
+    const id = new URLSearchParams(location.search).get('id');
+    const p = findProduct(id) || PRODUCTS[0];
+    document.title = `${p.name} — WEETY Supercars`;
+    document.getElementById('bc').textContent = p.name;
+    document.getElementById('pName').textContent = p.name;
+    const img = document.getElementById('pImg'); img.src = p.image; img.alt = `${p.name} — фото автомобиля`;
+    document.getElementById('pDesc').textContent = p.description;
+    document.getElementById('pPrice').textContent = formatPrice(p.price);
+    const disc = calcDiscount(p.price, p.oldPrice);
+    document.getElementById('pOld').textContent = disc ? `${formatPrice(p.oldPrice)} · скидка ${disc}%` : '';
+    document.getElementById('pStatus').textContent = getStatus(p);
+    document.getElementById('pOrder').dataset.order = p.id;
+    document.getElementById('pCat').textContent = CATEGORIES[p.category].title;
+    const stats = document.getElementById('pStats');
+    p.stats.forEach(([v, l]) => { const c = el('div', 'col-4'); const b = el('div', 'spec-stat'); b.append(el('strong', '', v), el('small', 'text-secondary', l)); c.append(b); stats.append(c); });
+    const tb = document.getElementById('pSpecs');
+    p.specs.forEach(([k, v]) => { const tr = document.createElement('tr'); tr.append(el('th', 'fw-normal text-secondary', k), el('td', '', v)); tb.append(tr); });
+    // Отзывы
+    const list = document.getElementById('pReviews'), avg = document.getElementById('pAvg');
+    function renderReviews() {
+      const rs = getAllReviews(p.id).sort((a, b) => parseDate(b.date) - parseDate(a.date) || (b.id || 0) - (a.id || 0));
+      list.replaceChildren(...rs.map((r) => reviewNode(r, (rid) => { deleteReview(rid); renderReviews(); })));
+      const mean = rs.reduce((s, r) => s + r.rating, 0) / (rs.length || 1);
+      avg.textContent = rs.length ? `${mean.toFixed(1)} из 5 · ${rs.length} ${plural(rs.length, 'отзыв', 'отзыва', 'отзывов')}` : 'Пока нет отзывов';
+    }
+    initReviewForm(document.getElementById('reviewForm'), p.id, renderReviews);
+    renderReviews();
+    // Похожие
+    fillCards(document.getElementById('related'), PRODUCTS.filter((x) => x.category === p.category && x.id !== p.id).slice(0, 3));
+  },
+
+  reviews() {
+    const list = document.getElementById('allReviews'), info = document.getElementById('info');
+    const fCar = document.getElementById('fCar'), fSort = document.getElementById('fSort'), fMine = document.getElementById('fMine');
+    fCar.append(...PRODUCTS.map((p) => { const o = el('option', '', p.name); o.value = p.id; return o; }));
+    function render() {
+      let rs = getAllReviews(fCar.value === 'all' ? null : fCar.value);
+      if (fMine.checked) rs = rs.filter((r) => r.mine);
+      if (fSort.value === 'new') rs.sort((a, b) => parseDate(b.date) - parseDate(a.date) || (b.id || 0) - (a.id || 0));
+      if (fSort.value === 'high') rs.sort((a, b) => b.rating - a.rating);
+      if (fSort.value === 'low') rs.sort((a, b) => a.rating - b.rating);
+      list.replaceChildren(...rs.map((r) => reviewNode(r, (id) => { deleteReview(id); render(); })));
+      if (!rs.length) list.append(el('p', 'text-secondary text-center py-4', 'Отзывов не найдено.'));
+      info.textContent = `Показано: ${rs.length} ${plural(rs.length, 'отзыв', 'отзыва', 'отзывов')}`;
+      // Сводка по оценкам
+      const all = getAllReviews();
+      const mean = all.reduce((s, r) => s + r.rating, 0) / all.length;
+      document.getElementById('avgNum').textContent = mean.toFixed(1);
+      document.getElementById('avgStars').textContent = stars(Math.round(mean));
+      document.getElementById('avgTotal').textContent = `${all.length} ${plural(all.length, 'отзыв', 'отзыва', 'отзывов')}`;
+      const bars = document.getElementById('bars'); bars.replaceChildren();
+      for (let n = 5; n >= 1; n--) {
+        const c = all.filter((r) => r.rating === n).length, pct = Math.round(c / all.length * 100);
+        const row = el('div', 'd-flex align-items-center gap-2 mb-1');
+        const bar = el('div', 'progress flex-grow-1'); bar.style.height = '8px';
+        const fill = el('div', 'progress-bar bg-warning'); fill.style.width = pct + '%'; bar.append(fill);
+        row.append(el('small', '', n + ' ★'), bar, el('small', 'text-secondary', String(c)));
+        bars.append(row);
+      }
+    }
+    [fCar, fSort, fMine].forEach((n) => n.addEventListener('input', render));
+    initReviewForm(document.getElementById('reviewForm'), null, render);
+    render();
+  },
+
+  contacts() {
+    bindForm(document.getElementById('contactForm'), (d) => toast(`Спасибо, ${d.get('name')}! Сообщение отправлено.`));
+  },
+  about() {}
+};
+
+// ===== 10. Запуск =====
+document.addEventListener('DOMContentLoaded', () => {
+  initOrderModal();
+  initToTop();
+  const page = document.body.dataset.page;
+  if (pages[page]) pages[page]();
+  observeReveal();
+  initCounters();
+  consoleDemo();
+});
