@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /account.html
+Disallow: /favorites.html
+
+Sitemap: https://weety-cars.ru/sitemap.xml

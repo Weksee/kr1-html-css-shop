@@ -122,6 +122,16 @@ function reviewNode(r, onDelete) {
   return col;
 }
 
+// ===== SEO: мета-теги и структурированные данные (JSON-LD) =====
+const SITE_URL = 'https://weety-cars.ru';
+function setMeta(selector, attr, value) { const n = document.querySelector(selector); if (n) n.setAttribute(attr, value); }
+function addJsonLd(data) {
+  const script = document.createElement('script');
+  script.type = 'application/ld+json';
+  script.textContent = JSON.stringify(data);   // textContent — безопасно
+  document.head.append(script);
+}
+
 // ===== 4. Карточки автомобилей =====
 function cardHtml(p) {
   const b = BADGES[p.badge];
@@ -189,7 +199,7 @@ function initToTop() {
   btn.id = 'toTop'; btn.type = 'button'; btn.setAttribute('aria-label', 'Наверх');
   btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
   document.body.append(btn);
-  window.addEventListener('scroll', () => { btn.style.display = window.scrollY > 500 ? 'block' : 'none'; });
+  window.addEventListener('scroll', () => { btn.style.display = window.scrollY > 500 ? 'block' : 'none'; }, { passive: true });
 }
 function toast(message) {
   let wrap = document.getElementById('toasts');
@@ -321,6 +331,8 @@ const pages = {
     [q, cat, sort, price, stock].forEach((n) => n.addEventListener('input', apply));
     document.getElementById('reset').addEventListener('click', () => { q.value = ''; cat.value = 'all'; sort.value = 'default'; price.value = price.max; stock.checked = false; apply(); });
     apply();
+    addJsonLd({ '@context': 'https://schema.org', '@type': 'ItemList', name: 'Каталог суперкаров WEETY',
+      itemListElement: PRODUCTS.map((p, i) => ({ '@type': 'ListItem', position: i + 1, url: `${SITE_URL}/product.html?id=${p.id}`, name: p.name })) });
     // Сравнительная таблица
     const tbody = document.getElementById('compare');
     PRODUCTS.forEach((p) => {
@@ -361,6 +373,34 @@ const pages = {
     }
     initReviewForm(document.getElementById('reviewForm'), p.id, renderReviews);
     renderReviews();
+    // SEO: уникальные title/description/canonical и разметка Product для каждой карточки
+    const canonical = `${SITE_URL}/product.html?id=${p.id}`, desc = shortDescription(p) + ' ' + p.short;
+    setMeta('meta[name="description"]', 'content', desc);
+    setMeta('link[rel="canonical"]', 'href', canonical);
+    setMeta('meta[property="og:title"]', 'content', document.title);
+    setMeta('meta[property="og:description"]', 'content', desc);
+    setMeta('meta[property="og:url"]', 'content', canonical);
+    setMeta('meta[property="og:image"]', 'content', `${SITE_URL}/${p.image}`);
+    setMeta('meta[name="twitter:title"]', 'content', document.title);
+    setMeta('meta[name="twitter:description"]', 'content', desc);
+    setMeta('meta[name="twitter:image"]', 'content', `${SITE_URL}/${p.image}`);
+    const seoReviews = getAllReviews(p.id);
+    const product = {
+      '@context': 'https://schema.org', '@type': 'Product', name: p.name, image: [`${SITE_URL}/${p.image}`], description: p.description,
+      brand: { '@type': 'Brand', name: p.name.split(' ')[0] },
+      offers: { '@type': 'Offer', url: canonical, priceCurrency: 'RUB', price: p.price, itemCondition: 'https://schema.org/NewCondition',
+        availability: getSpec(p, 'Наличие') === 'В наличии' ? 'https://schema.org/InStock' : 'https://schema.org/PreOrder' }
+    };
+    if (seoReviews.length) product.aggregateRating = { '@type': 'AggregateRating', ratingValue: (seoReviews.reduce((s, r) => s + r.rating, 0) / seoReviews.length).toFixed(1), reviewCount: seoReviews.length };
+    addJsonLd(product);
+    addJsonLd({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Главная', item: SITE_URL + '/' },
+      { '@type': 'ListItem', position: 2, name: 'Каталог', item: SITE_URL + '/catalog.html' },
+      { '@type': 'ListItem', position: 3, name: p.name, item: canonical }] });
+    // Нижняя панель покупки (мобильные)
+    document.getElementById('barPrice').textContent = formatPrice(p.price);
+    document.getElementById('barName').textContent = p.name;
+    document.getElementById('barOrder').dataset.order = p.id;
     // Похожие
     fillCards(document.getElementById('related'), PRODUCTS.filter((x) => x.category === p.category && x.id !== p.id).slice(0, 3));
   },
@@ -644,6 +684,7 @@ function initChat() {
   history.forEach(draw);
   function open(on) {
     panel.classList.toggle('open', on);
+    document.body.classList.toggle('chat-open', on);
     btn.setAttribute('aria-expanded', String(on));
     btn.querySelector('.dot').style.display = on ? 'none' : '';
     if (on) {
@@ -662,6 +703,15 @@ function initChat() {
 }
 
 // ===== 14. Запуск =====
+// Экономия трафика / медленная сеть: отключаем тяжёлые эффекты
+const conn = navigator.connection;
+if (conn && (conn.saveData || /(^|-)2g$/.test(conn.effectiveType || ''))) document.documentElement.classList.add('save-data');
+
+// PWA: офлайн-режим (только по http/https)
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initOrderModal();
   initToTop();

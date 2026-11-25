@@ -187,3 +187,76 @@ body, .navbar, .car-card, .feature, .form-box, .review, .footer, .contact-card, 
 .chat__chips button { font-size: .8rem; }
 .chat__form { display: flex; gap: .5rem; padding: .7rem; border-top: 1px solid var(--w-line); }
 @media (max-width: 575.98px) { #chatPanel { left: .6rem; bottom: 5.4rem; width: calc(100vw - 1.2rem); max-width: none; } }
+
+/* ============================================================
+   МОБИЛЬНАЯ ОПТИМИЗАЦИЯ (практика 14)
+   ============================================================ */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { overflow-x: hidden; -webkit-tap-highlight-color: transparent; padding-top: calc(72px + env(safe-area-inset-top, 0px)); }
+.navbar { padding-top: env(safe-area-inset-top, 0px); padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
+.hero { margin-top: calc(-72px - env(safe-area-inset-top, 0px)); padding-top: calc(72px + env(safe-area-inset-top, 0px)); min-height: 88vh; min-height: 88svh; }
+a, button, .btn, .nav-link, label[for], summary { touch-action: manipulation; }
+
+/* Крупные зоны нажатия (не меньше 44×44 px) */
+.btn, .form-control, .form-select { min-height: 44px; }
+.btn-sm { min-height: 40px; display: inline-flex; align-items: center; justify-content: center; }
+.icon-btn, .fav-btn { width: 44px; height: 44px; }
+.navbar-toggler { min-width: 44px; min-height: 44px; }
+.form-check-input { width: 1.3em; height: 1.3em; }
+.form-check-label { padding-left: .25rem; }
+.star-rating label { padding: 0 .1rem; }
+/* 16px в полях — iOS не приближает страницу при фокусе */
+.form-control, .form-select, .form-control::placeholder { font-size: 1rem; }
+
+/* Анимация тяжёлых эффектов отключается на сенсорных экранах и при экономии трафика */
+@media (hover: none) {
+  .car-card:hover, .feature:hover, .contact-card:hover, .btn-red:hover, .icon-btn:hover { transform: none; }
+  .car-card:hover .car-card__media img, .feature:hover i { transform: none; }
+}
+.save-data .hero__img { animation: none; }
+.save-data .reveal { opacity: 1; transform: none; }
+
+/* Отложенная отрисовка секций ниже первого экрана */
+section.section + section.section, .footer { content-visibility: auto; contain-intrinsic-size: auto 600px; }
+
+/* Нижняя панель покупки на странице автомобиля */
+.buy-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 1030; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .7rem 1rem calc(.7rem + env(safe-area-inset-bottom, 0px)); background: var(--w-nav); backdrop-filter: blur(10px); border-top: 1px solid var(--w-line); }
+.min-w-0 { min-width: 0; }
+
+@media (max-width: 991.98px) {
+  body[data-page="product"] { padding-bottom: calc(4.8rem + env(safe-area-inset-bottom, 0px)); }
+  body[data-page="product"] #chatBtn, body[data-page="product"] #toTop { bottom: calc(5.6rem + env(safe-area-inset-bottom, 0px)); }
+  .navbar-collapse { max-height: calc(100vh - 80px); overflow-y: auto; }
+}
+
+@media (max-width: 767.98px) {
+  .hero { min-height: 80vh; min-height: 80svh; }
+  .hero__img { animation: none; object-position: 62% center; }
+  .hero h1 { font-size: clamp(2rem, 9vw, 2.6rem); }
+  .hero .btn-lg { width: 100%; }
+  .section { padding: 2.5rem 0; }
+  .section__title { margin-bottom: 1.4rem; font-size: 1.6rem; }
+  .page-hero { padding: 2.2rem 0 1.4rem; }
+  .page-hero h1 { font-size: 1.9rem; }
+  .cta { padding: 2rem 1.25rem; }
+  .stat { padding: 1rem .5rem; }
+  .navbar-nav .nav-link { padding: .9rem .25rem; font-size: 1.05rem; border-bottom: 1px solid var(--w-line); }
+  .navbar-nav .nav-link::after { display: none; }
+  .table { font-size: .9rem; }
+  .footer { padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px)); }
+  .car-card__body { padding: 1rem; }
+  .form-box { padding: 1.1rem; }
+  .star-rating label { font-size: 2.4rem; }
+  .nav-pills { flex-wrap: nowrap !important; overflow-x: auto; scrollbar-width: none; }
+  .nav-pills::-webkit-scrollbar { display: none; }
+  .nav-pills .nav-link { white-space: nowrap; }
+  .fav-row img { width: 80px; height: 54px; }
+}
+
+/* Чат на телефоне — «нижний лист» на весь экран по ширине */
+@media (max-width: 575.98px) {
+  #chatPanel { left: 0; right: 0; bottom: 0; width: 100%; max-width: none; height: 85vh; height: 85dvh; max-height: none; border-radius: 1.2rem 1.2rem 0 0; padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .chat-open #chatBtn { display: none; }
+  .chat__log { overscroll-behavior: contain; }
+}
+@media (max-width: 359.98px) { .navbar-brand small { display: none; } .icon-btn { width: 40px; } }
