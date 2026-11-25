@@ -192,10 +192,9 @@ body, .navbar, .car-card, .feature, .form-box, .review, .footer, .contact-card, 
    МОБИЛЬНАЯ ОПТИМИЗАЦИЯ (практика 14)
    ============================================================ */
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-:root { --nav-h: 72px; }
-body { overflow-x: hidden; -webkit-tap-highlight-color: transparent; padding-top: calc(var(--nav-h) + env(safe-area-inset-top, 0px)); }
+body { overflow-x: hidden; -webkit-tap-highlight-color: transparent; padding-top: calc(72px + env(safe-area-inset-top, 0px)); }
 .navbar { padding-top: env(safe-area-inset-top, 0px); padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
-.hero { margin-top: calc(var(--nav-h) * -1 - env(safe-area-inset-top, 0px)); padding-top: calc(var(--nav-h) + env(safe-area-inset-top, 0px)); min-height: 88vh; min-height: 88svh; }
+.hero { margin-top: calc(-72px - env(safe-area-inset-top, 0px)); padding-top: calc(72px + env(safe-area-inset-top, 0px)); min-height: 88vh; min-height: 88svh; }
 a, button, .btn, .nav-link, label[for], summary { touch-action: manipulation; }
 
 /* Крупные зоны нажатия (не меньше 44×44 px) */
@@ -227,6 +226,7 @@ section.section + section.section, .footer { content-visibility: auto; contain-i
 @media (max-width: 991.98px) {
   body[data-page="product"] { padding-bottom: calc(4.8rem + env(safe-area-inset-bottom, 0px)); }
   body[data-page="product"] #chatBtn, body[data-page="product"] #toTop { bottom: calc(5.6rem + env(safe-area-inset-bottom, 0px)); }
+  .navbar-collapse { max-height: calc(100vh - 80px); overflow-y: auto; }
 }
 
 @media (max-width: 767.98px) {
@@ -240,6 +240,8 @@ section.section + section.section, .footer { content-visibility: auto; contain-i
   .page-hero h1 { font-size: 1.9rem; }
   .cta { padding: 2rem 1.25rem; }
   .stat { padding: 1rem .5rem; }
+  .navbar-nav .nav-link { padding: .9rem .25rem; font-size: 1.05rem; border-bottom: 1px solid var(--w-line); }
+  .navbar-nav .nav-link::after { display: none; }
   .table { font-size: .9rem; }
   .footer { padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px)); }
   .car-card__body { padding: 1rem; }
@@ -258,40 +260,3 @@ section.section + section.section, .footer { content-visibility: auto; contain-i
   .chat__log { overscroll-behavior: contain; }
 }
 @media (max-width: 359.98px) { .navbar-brand small { display: none; } .icon-btn { width: 40px; } }
-
-/* ===== Телефон: шапка в две строки без бургера, карточки в 2 колонки, компактный футер ===== */
-@media (max-width: 767.98px) {
-  :root { --nav-h: 100px; }
-  .navbar { padding-bottom: 0; }
-  .navbar > .container { row-gap: 0; }
-  .navbar-brand { margin-right: 0; padding: .2rem 0; }
-  #menu { flex-basis: 100%; border-top: 1px solid var(--w-line); margin: .15rem -.25rem 0; }
-  #menu .navbar-nav { flex-direction: row; justify-content: space-between; width: 100%; gap: 0; }
-  #menu .nav-link { padding: .6rem .5rem; font-size: .95rem; white-space: nowrap; }
-  #menu .nav-link::after { bottom: 0; }
-
-  /* Карточки: две колонки */
-  .car-card { border-radius: .8rem; }
-  .car-card__body { padding: .65rem; }
-  .car-card__body h3 { font-size: .95rem; margin-bottom: .3rem; }
-  .car-card__body p.small { font-size: .75rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: .5rem; }
-  .car-card__price { font-size: 1rem; }
-  .car-card__body .old-price { font-size: .75rem; }
-  .car-card__body small { font-size: .7rem; }
-  .car-card .btn { font-size: .8rem; padding: .35rem .4rem; min-height: 40px; }
-  .car-card__badge { font-size: .65rem; top: .45rem; left: .45rem; }
-  .fav-btn { width: 40px; height: 40px; top: .35rem; right: .35rem; }
-
-  /* Футер: один компактный блок */
-  .footer { padding: 1.5rem 0 calc(1rem + env(safe-area-inset-bottom, 0px)); margin-top: 1.5rem; }
-  .footer-box { background: var(--w-card); border: 1px solid var(--w-line); border-radius: 1rem; padding: 1.1rem; }
-  .footer-box .row { --bs-gutter-y: .9rem; }
-  .footer-box p { font-size: .85rem; margin: .4rem 0 0 !important; padding: 0 !important; }
-  .footer h2 { font-size: .8rem; margin-bottom: .5rem; }
-  .footer nav ul { display: flex; flex-wrap: wrap; gap: .3rem 1.2rem; margin: 0; }
-  .footer nav li { margin: 0; }
-  .footer .contacts { margin: 0; font-size: .88rem; }
-  .footer .contacts li { margin-bottom: .35rem; overflow-wrap: anywhere; }
-  .footer hr { margin: 1rem 0 .7rem; }
-}
-@media (max-width: 359.98px) { #menu .nav-link { font-size: .85rem; padding: .6rem .3rem; } }

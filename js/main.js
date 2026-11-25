@@ -139,7 +139,7 @@ function cardHtml(p) {
   const badgeClass = p.badge === 'discount' ? 'bg-danger' : p.badge === 'new' ? 'bg-success' : 'bg-warning text-dark';
   const badgeText = disc ? `−${disc}%` : b.text;
   return `
-  <div class="col-6 col-lg-4 reveal">
+  <div class="col-sm-6 col-lg-4 reveal">
     <article class="car-card">
       <button class="fav-btn" type="button" data-fav="${p.id}" aria-pressed="${isFav(p.id)}" aria-label="Избранное: ${escapeHtml(p.name)}"><i class="bi ${isFav(p.id) ? 'bi-heart-fill' : 'bi-heart'}"></i></button>
       <a class="car-card__media" href="product.html?id=${p.id}" aria-label="Подробнее: ${escapeHtml(p.name)}">
@@ -154,7 +154,7 @@ function cardHtml(p) {
           ${p.oldPrice ? `<div class="old-price">${formatPrice(p.oldPrice)}</div>` : ''}
           <small class="${getSpec(p, 'Наличие') === 'В наличии' ? 'text-success' : 'text-warning'}"><i class="bi bi-circle-fill small"></i> ${getStatus(p)}</small>
         </div>
-        <div class="d-flex flex-column flex-sm-row gap-2">
+        <div class="d-flex gap-2">
           <a class="btn btn-outline-light flex-fill" href="product.html?id=${p.id}">Подробнее</a>
           <button class="btn btn-red flex-fill" type="button" data-order="${p.id}">Купить</button>
         </div>
